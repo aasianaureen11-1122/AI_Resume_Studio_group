@@ -1,0 +1,14 @@
+﻿@model Resume
+@using AI_Resume.Models
+
+<div class="container mt-4">
+    <h2>Delete Resume</h2>
+    <div class="alert alert-danger">
+        Are you sure you want to delete the resume for <strong>@Model.FullName</strong>?
+    </div>
+    <form asp-action="Delete" method="post">
+        <input asp-for="Id" type="hidden" />
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>

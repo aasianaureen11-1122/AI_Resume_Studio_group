@@ -1,0 +1,9 @@
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\rpswa.dswa.cache.json
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.AssemblyInfoInputs.cache
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.AssemblyInfo.cs
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.csproj.CoreCompileInputs.cache
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.RazorAssemblyInfo.cache
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.RazorAssemblyInfo.cs
+C:\Users\SUNNY.COM\source\repos\AI_Resume\obj\Debug\net10.0\AI_Resume.csproj.AssemblyReference.cache

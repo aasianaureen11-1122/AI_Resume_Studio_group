@@ -1,0 +1,37 @@
+﻿@using AI_Resume.Models
+@model Resume
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Resume Details</h2>
+        <div>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Edit</a>
+            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header"><strong>Personal Information</strong></div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Full Name</dt>
+                <dd class="col-sm-9">@Model.FullName</dd>
+
+                <dt class="col-sm-3">Email</dt>
+                <dd class="col-sm-9">@Model.Email</dd>
+
+                <dt class="col-sm-3">Phone</dt>
+                <dd class="col-sm-9">@Model.Phone</dd>
+
+                <dt class="col-sm-3">Job Title</dt>
+                <dd class="col-sm-9">@Model.JobTitle</dd>
+
+                <dt class="col-sm-3">Summary</dt>
+                <dd class="col-sm-9">@Model.Summary</dd>
+
+                <dt class="col-sm-3">Created</dt>
+                <dd class="col-sm-9">@Model.CreatedAt.ToShortDateString()</dd>
+            </dl>
+        </div>
+    </div>
+</div>
