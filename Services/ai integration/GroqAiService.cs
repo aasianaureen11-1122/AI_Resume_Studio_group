@@ -20,29 +20,43 @@ namespace AI_Resume.Services.ai_integration
 
         public async Task<AIFeedback> AnalyzeResumeAsync(string resumeText)
         {
-            var body = new
+            var requestBody = new
             {
-                model = "llama3-8b-8192",
+                model = "llama-3.3-70b-versatile",
                 messages = new[]
                 {
-                    new { role = "system", content = "Reply ONLY with JSON: {\"score\":0,\"skillGaps\":[],\"improvements\":[],\"summary\":\"\"}" },
-                    new { role = "user", content = resumeText }
+                    new {
+                        role = "system",
+                        content = "You are a resume reviewer. Analyze the resume and respond ONLY with a JSON object. No extra text. Format: {\"score\": 80, \"skillGaps\": [\"gap1\", \"gap2\"], \"improvements\": [\"tip1\", \"tip2\"], \"summary\": \"overall summary\"}"
+                    },
+                    new {
+                        role = "user",
+                        content = "Analyze this resume: " + resumeText
+                    }
                 },
                 temperature = 0.3,
-                max_tokens = 800
+                max_tokens = 1000
             };
 
+            var json = JsonSerializer.Serialize(requestBody);
             var req = new HttpRequestMessage(HttpMethod.Post, _url)
             {
-                Content = new StringContent(
-                    JsonSerializer.Serialize(body), Encoding.UTF8, "application/json")
+                Content = new StringContent(json, Encoding.UTF8, "application/json")
             };
             req.Headers.Authorization =
                 new AuthenticationHeaderValue("Bearer", _key);
 
             var res = await _http.SendAsync(req);
-            res.EnsureSuccessStatusCode();
             var raw = await res.Content.ReadAsStringAsync();
+
+            if (!res.IsSuccessStatusCode)
+            {
+                return new AIFeedback
+                {
+                    Score = 0,
+                    Summary = "AI service error: " + raw
+                };
+            }
 
             using var doc = JsonDocument.Parse(raw);
             var txt = doc.RootElement
@@ -50,9 +64,16 @@ namespace AI_Resume.Services.ai_integration
                 .GetProperty("message")
                 .GetProperty("content").GetString()!;
 
+            // Clean response
+            txt = txt.Trim();
+            if (txt.Contains("```"))
+            {
+                txt = txt.Replace("```json", "").Replace("```", "").Trim();
+            }
+
             return JsonSerializer.Deserialize<AIFeedback>(txt,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
-                ?? new AIFeedback { Summary = "Error" };
+                ?? new AIFeedback { Summary = "Could not parse AI response" };
         }
     }
 }
