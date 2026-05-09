@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "AI_Resume": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}

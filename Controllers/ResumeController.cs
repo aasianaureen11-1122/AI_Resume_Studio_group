@@ -1,20 +1,24 @@
 ﻿// Controllers/ResumeController.cs
 using AI_Resume.Models;
-using AI_Resume.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using AI_Resume.Services.ai_integration;
 
 [Authorize]  // All actions require login
 public class ResumeController : Controller
 {
     private readonly ResumeService _resumeService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IGroqAiService _aiService;
 
-    public ResumeController(ResumeService resumeService, UserManager<ApplicationUser> userManager)
+    public ResumeController(ResumeService resumeService,
+    UserManager<ApplicationUser> userManager,
+    IGroqAiService aiService)
     {
         _resumeService = resumeService;
         _userManager = userManager;
+        _aiService = aiService;  // yeh add karo
     }
 
     // GET: /Resume/Index — list all resumes
@@ -40,6 +44,19 @@ public class ResumeController : Controller
 
         var userId = _userManager.GetUserId(User);
         await _resumeService.CreateResumeAsync(resume, userId!);
+
+        // AI Analysis
+        var resumeText = $"Name: {resume.FullName}, " +
+                 $"Email: {resume.Email}, " +
+                 $"Phone: {resume.Phone}, " +
+                 $"Job Title: {resume.JobTitle}, " +
+                 $"Summary: {resume.Summary}";
+        var aiFeedback = await _aiService.AnalyzeResumeAsync(resumeText);
+        TempData["AIScore"] = aiFeedback.Score;
+        TempData["AISummary"] = aiFeedback.Summary;
+        TempData["AISkillGaps"] = string.Join(", ", aiFeedback.SkillGaps);
+        TempData["AIImprovements"] = string.Join(", ", aiFeedback.Improvements);
+
         return RedirectToAction(nameof(Index));
     }
 
