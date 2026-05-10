@@ -1,0 +1,37 @@
+﻿{
+    ViewData["Title"] = "AI Generated Resume";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>AI Generated Resume</h2>
+                <a asp-action="Index" class="btn btn-outline-secondary">← Back</a>
+            </div>
+
+            @if (ViewBag.GeneratedResume != null)
+            {
+                <div class="card shadow">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between">
+                        <h5 class="mb-0">@ViewBag.ResumeName — Professional Resume</h5>
+                        <button onclick="window.print()" class="btn btn-light btn-sm">
+                            🖨️ Print / Save as PDF
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <pre style="white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.8;">@ViewBag.GeneratedResume</pre>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    Could not generate resume. Please try again.
+                </div>
+            }
+
+        </div>
+    </div>
+</div>

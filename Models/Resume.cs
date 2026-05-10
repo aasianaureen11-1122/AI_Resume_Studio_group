@@ -35,5 +35,11 @@ namespace AI_Resume.Models
 
         // Link back to the user (Identity)
         public ApplicationUser? User { get; set; }
+        public string? AIGeneratedResume { get; set; }
+        public int? AIScore { get; set; }
+        public string? AISummary { get; set; }
+        public string? AISkillGaps { get; set; }
+        public string? AIImprovements { get; set; }
     }
+
 }

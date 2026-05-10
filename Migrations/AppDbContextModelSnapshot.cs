@@ -17,7 +17,7 @@ namespace AI_Resume.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -137,6 +137,21 @@ namespace AI_Resume.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("AIGeneratedResume")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AIImprovements")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("AIScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("AISkillGaps")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("AISummary")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");

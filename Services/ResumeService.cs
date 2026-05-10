@@ -59,4 +59,9 @@ public class ResumeService
         await _context.SaveChangesAsync();
         return true;
     }
+    public string? AIGeneratedResume { get; set; }
+    public int? AIScore { get; set; }
+    public string? AISummary { get; set; }
+    public string? AISkillGaps { get; set; }
+    public string? AIImprovements { get; set; }
 }
