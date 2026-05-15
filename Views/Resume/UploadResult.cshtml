@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Upload Analysis Result";
+}
+
+<h2 class="mb-4">AI Resume Analysis Result</h2>
+
+<div class="card mb-4">
+    <div class="card-header text-white" style="background-color:#28a745;">
+        <strong>✨ AI Resume Analysis</strong>
+    </div>
+    <div class="card-body">
+        <h4>Score: @ViewBag.Score / 100</h4>
+        <p><strong>Summary:</strong> @ViewBag.Summary</p>
+
+        @if (ViewBag.SkillGaps != null)
+        {
+            <p><strong>Skill Gaps:</strong></p>
+            <ul>
+                @foreach (var gap in ViewBag.SkillGaps)
+                {
+                    <li>@gap</li>
+                }
+            </ul>
+        }
+
+        @if (ViewBag.Improvements != null)
+        {
+            <p><strong>Improvements:</strong></p>
+            <ul>
+                @foreach (var tip in ViewBag.Improvements)
+                {
+                    <li>@tip</li>
+                }
+            </ul>
+        }
+    </div>
+</div>
+
+<a href="/Resume/UploadResume" class="btn btn-outline-primary">⬅ Analyze Another Resume</a>
+<a href="/Resume/Index" class="btn btn-outline-secondary">My Resumes</a>

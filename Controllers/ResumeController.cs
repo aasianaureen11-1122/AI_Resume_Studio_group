@@ -1,9 +1,9 @@
-﻿// C// Controllers/ResumeController.cs
-using AI_Resume.Models;
+﻿using AI_Resume.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using AI_Resume.Services.ai_integration;
+using UglyToad.PdfPig;
 
 [Authorize]
 public class ResumeController : Controller
@@ -52,7 +52,6 @@ public class ResumeController : Controller
                          $"Summary: {resume.Summary}";
         var aiFeedback = await _aiService.AnalyzeResumeAsync(resumeText);
 
-        // Database mein save karo ← yeh add karo
         resume.AIScore = aiFeedback.Score;
         resume.AISummary = aiFeedback.Summary;
         resume.AISkillGaps = string.Join(", ", aiFeedback.SkillGaps);
@@ -151,5 +150,53 @@ public class ResumeController : Controller
         ViewBag.GeneratedResume = generatedResume;
         ViewBag.ResumeName = resume.FullName;
         return View();
+    }
+
+    // GET: /Resume/UploadResume
+    public IActionResult UploadResume()
+    {
+        return View();
+    }
+
+    // POST: /Resume/UploadResume
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadResume(IFormFile resumeFile)
+    {
+        if (resumeFile == null || resumeFile.Length == 0)
+        {
+            ViewBag.Error = "Please select a PDF file.";
+            return View();
+        }
+
+        if (!resumeFile.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            ViewBag.Error = "Only PDF files are allowed.";
+            return View();
+        }
+
+        string resumeText = "";
+        using (var stream = resumeFile.OpenReadStream())
+        {
+            using var pdfDoc = PdfDocument.Open(stream);
+            foreach (var page in pdfDoc.GetPages())
+            {
+                resumeText += page.Text + "\n";
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(resumeText))
+        {
+            ViewBag.Error = "Could not read text from the PDF. Make sure it is not a scanned image.";
+            return View();
+        }
+
+        var analysis = await _aiService.AnalyzeUploadedResumeAsync(resumeText);
+        ViewBag.Score = analysis.Score;
+        ViewBag.Summary = analysis.Summary;
+        ViewBag.SkillGaps = analysis.SkillGaps;
+        ViewBag.Improvements = analysis.Improvements;
+
+        return View("UploadResult");
     }
 }

@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Upload Resume";
+}
+
+<h2 class="mb-4">📄 Upload & Analyze Your Resume</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<div class="card p-4" style="max-width:600px;">
+    <p class="text-muted">Upload your existing resume (PDF) and our AI will analyze it for you.</p>
+    
+    <form method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <div class="mb-3">
+            <label class="form-label fw-bold">Select Resume (PDF only)</label>
+            <input type="file" name="resumeFile" accept=".pdf" class="form-control" required />
+        </div>
+        <button type="submit" class="btn btn-success w-100">
+            ✨ Analyze My Resume
+        </button>
+    </form>
+</div>
