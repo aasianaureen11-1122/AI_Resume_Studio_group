@@ -1,23 +1,27 @@
-﻿// Controllers/ResumeController.cs
-using AI_Resume.Models;
-using AI_Resume.Models;
+﻿using AI_Resume.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using AI_Resume.Services.ai_integration;
+using UglyToad.PdfPig;
 
-[Authorize]  // All actions require login
+[Authorize]
 public class ResumeController : Controller
 {
     private readonly ResumeService _resumeService;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IGroqAiService _aiService;
 
-    public ResumeController(ResumeService resumeService, UserManager<ApplicationUser> userManager)
+    public ResumeController(ResumeService resumeService,
+        UserManager<ApplicationUser> userManager,
+        IGroqAiService aiService)
     {
         _resumeService = resumeService;
         _userManager = userManager;
+        _aiService = aiService;
     }
 
-    // GET: /Resume/Index — list all resumes
+    // GET: /Resume/Index
     public async Task<IActionResult> Index()
     {
         var userId = _userManager.GetUserId(User);
@@ -40,6 +44,35 @@ public class ResumeController : Controller
 
         var userId = _userManager.GetUserId(User);
         await _resumeService.CreateResumeAsync(resume, userId!);
+
+        var resumeText = $"Name: {resume.FullName}, " +
+                         $"Email: {resume.Email}, " +
+                         $"Phone: {resume.Phone}, " +
+                         $"Job Title: {resume.JobTitle}, " +
+                         $"Summary: {resume.Summary}";
+        var aiFeedback = await _aiService.AnalyzeResumeAsync(resumeText);
+
+        resume.AIScore = aiFeedback.Score;
+        resume.AISummary = aiFeedback.Summary;
+        resume.AISkillGaps = string.Join(", ", aiFeedback.SkillGaps);
+        resume.AIImprovements = string.Join(", ", aiFeedback.Improvements);
+        await _resumeService.UpdateResumeAsync(resume);
+
+        TempData["AIScore"] = aiFeedback.Score;
+        var aiGenerated = await _aiService.GenerateResumeAsync(resumeText);
+
+        resume.AIScore = aiFeedback.Score;
+        resume.AISummary = aiFeedback.Summary;
+        resume.AISkillGaps = string.Join(", ", aiFeedback.SkillGaps);
+        resume.AIImprovements = string.Join(", ", aiFeedback.Improvements);
+        resume.AIGeneratedResume = aiGenerated;
+        await _resumeService.UpdateResumeAsync(resume);
+
+        TempData["AIScore"] = aiFeedback.Score;
+        TempData["AISummary"] = aiFeedback.Summary;
+        TempData["AISkillGaps"] = resume.AISkillGaps;
+        TempData["AIImprovements"] = resume.AIImprovements;
+
         return RedirectToAction(nameof(Index));
     }
 
@@ -67,7 +100,6 @@ public class ResumeController : Controller
     public async Task<IActionResult> Edit(Resume resume)
     {
         if (!ModelState.IsValid) return View(resume);
-
         await _resumeService.UpdateResumeAsync(resume);
         return RedirectToAction(nameof(Index));
     }
@@ -89,5 +121,82 @@ public class ResumeController : Controller
         var userId = _userManager.GetUserId(User);
         await _resumeService.DeleteResumeAsync(id, userId!);
         return RedirectToAction(nameof(Index));
+    }
+
+    // GET: /Resume/GenerateAI/5
+    public async Task<IActionResult> GenerateAI(int id)
+    {
+        var userId = _userManager.GetUserId(User);
+        var resume = await _resumeService.GetResumeByIdAsync(id, userId!);
+        if (resume == null) return NotFound();
+
+        if (!string.IsNullOrEmpty(resume.AIGeneratedResume))
+        {
+            ViewBag.GeneratedResume = resume.AIGeneratedResume;
+            ViewBag.ResumeName = resume.FullName;
+            return View();
+        }
+
+        var userInfo = $"Name: {resume.FullName}, " +
+                       $"Email: {resume.Email}, " +
+                       $"Phone: {resume.Phone}, " +
+                       $"Job Title: {resume.JobTitle}, " +
+                       $"Summary: {resume.Summary}";
+
+        var generatedResume = await _aiService.GenerateResumeAsync(userInfo);
+        resume.AIGeneratedResume = generatedResume;
+        await _resumeService.UpdateResumeAsync(resume);
+
+        ViewBag.GeneratedResume = generatedResume;
+        ViewBag.ResumeName = resume.FullName;
+        return View();
+    }
+
+    // GET: /Resume/UploadResume
+    public IActionResult UploadResume()
+    {
+        return View();
+    }
+
+    // POST: /Resume/UploadResume
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadResume(IFormFile resumeFile)
+    {
+        if (resumeFile == null || resumeFile.Length == 0)
+        {
+            ViewBag.Error = "Please select a PDF file.";
+            return View();
+        }
+
+        if (!resumeFile.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            ViewBag.Error = "Only PDF files are allowed.";
+            return View();
+        }
+
+        string resumeText = "";
+        using (var stream = resumeFile.OpenReadStream())
+        {
+            using var pdfDoc = PdfDocument.Open(stream);
+            foreach (var page in pdfDoc.GetPages())
+            {
+                resumeText += page.Text + "\n";
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(resumeText))
+        {
+            ViewBag.Error = "Could not read text from the PDF. Make sure it is not a scanned image.";
+            return View();
+        }
+
+        var analysis = await _aiService.AnalyzeUploadedResumeAsync(resumeText);
+        ViewBag.Score = analysis.Score;
+        ViewBag.Summary = analysis.Summary;
+        ViewBag.SkillGaps = analysis.SkillGaps;
+        ViewBag.Improvements = analysis.Improvements;
+
+        return View("UploadResult");
     }
 }

@@ -3,8 +3,10 @@ using AI_Resume.Data;
 using AI_Resume.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using AI_Resume.Services.ai_integration;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddHttpClient<IGroqAiService, GroqAiService>();
 
 // 1. EF Core + SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>

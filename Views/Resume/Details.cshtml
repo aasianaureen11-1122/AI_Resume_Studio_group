@@ -1,37 +1,63 @@
-﻿@using AI_Resume.Models
-@model Resume
+﻿@model AI_Resume.Models.Resume
+
+@{
+    ViewData["Title"] = "Resume Details";
+}
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Resume Details</h2>
-        <div>
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Edit</a>
-            <a asp-action="Index" class="btn btn-outline-secondary">Back to List</a>
+        <a asp-action="Index" class="btn btn-outline-secondary">← Back</a>
+    </div>
+
+    <!-- Personal Info -->
+    <div class="card mb-3">
+        <div class="card-header bg-primary text-white">Personal Information</div>
+        <div class="card-body">
+            <table class="table table-borderless">
+                <tr><td><strong>Full Name</strong></td><td>@Model.FullName</td></tr>
+                <tr><td><strong>Email</strong></td><td>@Model.Email</td></tr>
+                <tr><td><strong>Phone</strong></td><td>@Model.Phone</td></tr>
+                <tr><td><strong>Job Title</strong></td><td>@Model.JobTitle</td></tr>
+                <tr><td><strong>Summary</strong></td><td>@Model.Summary</td></tr>
+                <tr><td><strong>Created</strong></td><td>@Model.CreatedAt.ToShortDateString()</td></tr>
+            </table>
         </div>
     </div>
 
-    <div class="card mb-3">
-        <div class="card-header"><strong>Personal Information</strong></div>
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-3">Full Name</dt>
-                <dd class="col-sm-9">@Model.FullName</dd>
-
-                <dt class="col-sm-3">Email</dt>
-                <dd class="col-sm-9">@Model.Email</dd>
-
-                <dt class="col-sm-3">Phone</dt>
-                <dd class="col-sm-9">@Model.Phone</dd>
-
-                <dt class="col-sm-3">Job Title</dt>
-                <dd class="col-sm-9">@Model.JobTitle</dd>
-
-                <dt class="col-sm-3">Summary</dt>
-                <dd class="col-sm-9">@Model.Summary</dd>
-
-                <dt class="col-sm-3">Created</dt>
-                <dd class="col-sm-9">@Model.CreatedAt.ToShortDateString()</dd>
-            </dl>
+    <!-- AI Analysis — database se -->
+    @if (Model.AIScore != null)
+    {
+        <div class="card mb-3 border-success">
+            <div class="card-header bg-success text-white">
+                🤖 AI Resume Analysis
+            </div>
+            <div class="card-body">
+                <h4>Score: @Model.AIScore / 100</h4>
+                <p><strong>Summary:</strong> @Model.AISummary</p>
+                <p><strong>Skill Gaps:</strong> @Model.AISkillGaps</p>
+                <p><strong>Improvements:</strong> @Model.AIImprovements</p>
+            </div>
         </div>
+    }
+
+    <!-- AI Generated Resume — database se -->
+    @if (!string.IsNullOrEmpty(Model.AIGeneratedResume))
+    {
+        <div class="card mb-3 border-primary">
+            <div class="card-header bg-primary text-white d-flex justify-content-between">
+                <span>✨ AI Generated Resume</span>
+                <button onclick="window.print()" class="btn btn-light btn-sm">🖨️ Print / Save PDF</button>
+            </div>
+            <div class="card-body">
+                <pre style="white-space:pre-wrap;font-family:'Segoe UI';font-size:14px;line-height:1.8">@Model.AIGeneratedResume</pre>
+            </div>
+        </div>
+    }
+
+    <div class="d-flex gap-2">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
+        <a asp-action="GenerateAI" asp-route-id="@Model.Id" class="btn btn-success">✨ Generate AI Resume</a>
     </div>
 </div>
