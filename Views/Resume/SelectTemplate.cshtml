@@ -1,0 +1,229 @@
+﻿@model AI_Resume.Models.SelectTemplateViewModel
+@{
+    ViewData["Title"] = "Choose Template";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="Details" asp-route-id="@Model.ResumeId"
+                   class="btn btn-ghost me-3">
+                    <i class="bi bi-arrow-left"></i> Back
+                </a>
+                <div>
+                    <h2 class="page-title mb-0">Choose a Template</h2>
+                    <p class="text-muted mb-0 small">for <strong>@Model.ResumeName</strong></p>
+                </div>
+            </div>
+
+            <form asp-action="SelectTemplate" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ResumeId" />
+                <input type="hidden" asp-for="SelectedTemplate" id="selectedTemplateInput" />
+
+                <div class="row g-4 mb-4">
+
+                    <!-- Classic -->
+                    <div class="col-md-4">
+                        <div class="template-card @(Model.CurrentTemplate == "Classic" ? "active" : "")"
+                             onclick="selectTemplate('Classic', this)">
+                            <div class="template-preview classic-preview">
+                                <div class="prev-header-classic">
+                                    <div class="prev-name-bar"></div>
+                                    <div class="prev-sub-bar"></div>
+                                    <div class="prev-divider-dark"></div>
+                                </div>
+                                <div class="prev-section">
+                                    <div class="prev-section-label-classic"></div>
+                                    <div class="prev-line"></div>
+                                    <div class="prev-line short"></div>
+                                </div>
+                                <div class="prev-section">
+                                    <div class="prev-section-label-classic"></div>
+                                    <div class="prev-line"></div>
+                                    <div class="prev-line short"></div>
+                                    <div class="prev-line"></div>
+                                </div>
+                                <div class="prev-skills">
+                                    <span class="prev-pill-classic"></span>
+                                    <span class="prev-pill-classic"></span>
+                                    <span class="prev-pill-classic"></span>
+                                </div>
+                            </div>
+                            <div class="template-info">
+                                <span class="template-name">Classic</span>
+                                <span class="template-desc">Serif font, timeless layout — perfect for traditional industries</span>
+                                @if (Model.CurrentTemplate == "Classic")
+                                {
+                                    <span class="badge-current">Current</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Modern -->
+                    <div class="col-md-4">
+                        <div class="template-card @(Model.CurrentTemplate == "Modern" ? "active" : "")"
+                             onclick="selectTemplate('Modern', this)">
+                            <div class="template-preview modern-preview">
+                                <div class="prev-header-modern">
+                                    <div class="prev-name-bar white"></div>
+                                    <div class="prev-sub-bar blue-muted"></div>
+                                </div>
+                                <div class="prev-section">
+                                    <div class="prev-section-label-modern"></div>
+                                    <div class="prev-line"></div>
+                                    <div class="prev-line short"></div>
+                                </div>
+                                <div class="prev-section">
+                                    <div class="prev-section-label-modern"></div>
+                                    <div class="prev-line"></div>
+                                    <div class="prev-line short"></div>
+                                </div>
+                                <div class="prev-skills">
+                                    <span class="prev-pill-modern"></span>
+                                    <span class="prev-pill-modern"></span>
+                                    <span class="prev-pill-modern"></span>
+                                </div>
+                            </div>
+                            <div class="template-info">
+                                <span class="template-name">Modern</span>
+                                <span class="template-desc">Bold header, accent colors — great for tech and creative roles</span>
+                                @if (Model.CurrentTemplate == "Modern")
+                                {
+                                    <span class="badge-current">Current</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Minimal -->
+                    <div class="col-md-4">
+                        <div class="template-card @(Model.CurrentTemplate == "Minimal" ? "active" : "")"
+                             onclick="selectTemplate('Minimal', this)">
+                            <div class="template-preview minimal-preview">
+                                <div class="prev-header-minimal">
+                                    <div class="prev-name-bar thin"></div>
+                                    <div class="prev-sub-bar light"></div>
+                                </div>
+                                <div class="prev-section">
+                                    <div class="prev-section-label-minimal"></div>
+                                    <div class="prev-line light"></div>
+                                    <div class="prev-line short light"></div>
+                                </div>
+                                <div class="prev-section">
+                                    <div class="prev-section-label-minimal"></div>
+                                    <div class="prev-line light"></div>
+                                    <div class="prev-line short light"></div>
+                                </div>
+                                <div class="prev-skills">
+                                    <span class="prev-pill-minimal"></span>
+                                    <span class="prev-pill-minimal"></span>
+                                    <span class="prev-pill-minimal"></span>
+                                </div>
+                            </div>
+                            <div class="template-info">
+                                <span class="template-name">Minimal</span>
+                                <span class="template-desc">Clean whitespace, light lines — ideal for design and consulting</span>
+                                @if (Model.CurrentTemplate == "Minimal")
+                                {
+                                    <span class="badge-current">Current</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary-ai px-5 py-2" id="applyBtn" disabled>
+                        <i class="bi bi-check-circle me-2"></i> Apply Template
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .template-card {
+        border: 2px solid #dee2e6;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all .25s ease;
+        background: #fff;
+    }
+    .template-card:hover { border-color: #0d6efd; transform: translateY(-3px); box-shadow: 0 8px 24px rgba(13,110,253,.15); }
+    .template-card.active { border-color: #0d6efd; box-shadow: 0 8px 24px rgba(13,110,253,.2); }
+    .template-card.selected-new { border-color: #198754; box-shadow: 0 8px 24px rgba(25,135,84,.2); }
+
+    /* Preview pane */
+    .template-preview { height: 180px; padding: 14px; position: relative; overflow: hidden; }
+    .classic-preview  { background: #fff; }
+    .modern-preview   { background: #fff; }
+    .minimal-preview  { background: #fafafa; }
+
+    /* Skeleton bars */
+    .prev-name-bar   { height: 10px; width: 60%; background: #1a1a1a; border-radius: 2px; margin-bottom: 5px; }
+    .prev-name-bar.white  { background: #fff; }
+    .prev-name-bar.thin   { height: 8px; width: 55%; background: #1a1a1a; border-radius: 1px; font-weight: 300; }
+    .prev-sub-bar    { height: 6px; width: 38%; background: #888; border-radius: 2px; margin-bottom: 6px; }
+    .prev-sub-bar.blue-muted { background: #90b8d8; }
+    .prev-sub-bar.light      { background: #bbb; }
+    .prev-divider-dark { height: 1.5px; background: #1a1a1a; margin-bottom: 8px; }
+
+    /* Headers */
+    .prev-header-classic { margin-bottom: 8px; }
+    .prev-header-modern  { background: #1e3a5f; border-radius: 4px 4px 0 0; padding: 10px 10px 8px; margin: -14px -14px 8px; }
+    .prev-header-minimal { margin-bottom: 12px; }
+
+    /* Section labels */
+    .prev-section { margin-bottom: 8px; }
+    .prev-section-label-classic { height: 5px; width: 30%; background: #ccc; border-radius: 1px; margin-bottom: 4px; }
+    .prev-section-label-modern  { height: 5px; width: 30%; background: #1e3a5f; border-left: 2px solid #1e3a5f; padding-left: 4px; margin-bottom: 4px; }
+    .prev-section-label-minimal { height: 4px; width: 22%; background: #ddd; border-radius: 1px; margin-bottom: 5px; }
+
+    .prev-line       { height: 5px; width: 90%; background: #e0e0e0; border-radius: 2px; margin-bottom: 3px; }
+    .prev-line.short { width: 60%; }
+    .prev-line.light { background: #eee; }
+
+    /* Skill pills */
+    .prev-skills { display: flex; gap: 5px; margin-top: 6px; }
+    .prev-pill-classic { height: 12px; width: 28px; border: 1px solid #999; border-radius: 2px; }
+    .prev-pill-modern  { height: 12px; width: 28px; background: #1e3a5f; border-radius: 20px; }
+    .prev-pill-minimal { height: 10px; width: 24px; border-bottom: 1px solid #ccc; }
+
+    /* Info row */
+    .template-info   { padding: 12px 14px; border-top: 1px solid #f0f0f0; }
+    .template-name   { display: block; font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+    .template-desc   { display: block; font-size: 12px; color: #6c757d; margin-bottom: 4px; }
+    .badge-current   { display: inline-block; font-size: 11px; background: #d1e7dd; color: #146c43; padding: 2px 8px; border-radius: 20px; }
+
+    .btn-ghost       { background: transparent; border: 1px solid #dee2e6; border-radius: 8px; padding: 6px 14px; }
+    .btn-primary-ai  { background: #0d6efd; color: #fff; border: none; border-radius: 8px; font-weight: 500; }
+    .btn-primary-ai:disabled { background: #ccc; cursor: not-allowed; }
+    .btn-primary-ai:not(:disabled):hover { background: #0b5ed7; }
+    .page-title      { font-size: 22px; font-weight: 600; }
+</style>
+
+<script>
+    let currentTemplate = '@Model.CurrentTemplate';
+
+    function selectTemplate(name, card) {
+        document.querySelectorAll('.template-card').forEach(c => {
+            c.classList.remove('selected-new');
+        });
+        card.classList.add('selected-new');
+        document.getElementById('selectedTemplateInput').value = name;
+        const btn = document.getElementById('applyBtn');
+        btn.disabled = (name === currentTemplate);
+        btn.textContent = name === currentTemplate
+            ? 'Already applied'
+            : `Apply "${name}" Template`;
+    }
+</script>
