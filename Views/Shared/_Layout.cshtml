@@ -1,5 +1,4 @@
-﻿<!-- Add this at the top of _Layout.cshtml -->
-@using Microsoft.AspNetCore.Identity
+﻿@using Microsoft.AspNetCore.Identity
 @inject SignInManager<AI_Resume.Models.ApplicationUser> SignInManager
 @inject UserManager<AI_Resume.Models.ApplicationUser> UserManager
 <!DOCTYPE html>
@@ -7,71 +6,388 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - AI_Resume</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - AI Resume Studio</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AI_Resume.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <style>
+            :root {
+                --navy: #0a1628;
+                --navy-light: #112240;
+                --navy-mid: #1a3a6b;
+                --gold: #c9a84c;
+                --gold-light: #e8c97a;
+                --gold-dark: #a07830;
+                --white: #ffffff;
+                --off-white: #f4f6fa;
+                --text-muted: #8892a4;
+            }
+
+            * { box-sizing: border-box; }
+
+            body {
+                background-color: var(--off-white);
+                color: var(--navy);
+                font-family: 'Segoe UI', system-ui, sans-serif;
+                margin-bottom: 0;
+            }
+
+            /* NAVBAR */
+            .main-navbar {
+                background: var(--navy);
+                padding: 0 2rem;
+                box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+                position: sticky;
+                top: 0;
+                z-index: 1000;
+            }
+
+            .navbar-brand-custom {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                text-decoration: none;
+                padding: 1rem 0;
+            }
+
+            .brand-icon {
+                width: 38px;
+                height: 38px;
+                background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 18px;
+                color: var(--navy);
+            }
+
+            .brand-text {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: var(--white);
+                letter-spacing: 0.5px;
+            }
+
+            .brand-text span {
+                color: var(--gold);
+            }
+
+            .nav-links {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+
+            .nav-links a {
+                color: rgba(255,255,255,0.8);
+                text-decoration: none;
+                padding: 0.5rem 1rem;
+                border-radius: 6px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                transition: all 0.2s;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+
+            .nav-links a:hover {
+                color: var(--gold);
+                background: rgba(201,168,76,0.1);
+            }
+
+            .nav-links a.active {
+                color: var(--gold);
+            }
+
+            .nav-divider {
+                width: 1px;
+                height: 24px;
+                background: rgba(255,255,255,0.15);
+                margin: 0 0.5rem;
+            }
+
+            .btn-nav-login {
+                background: transparent;
+                border: 1px solid rgba(201,168,76,0.5);
+                color: var(--gold) !important;
+                padding: 0.4rem 1.2rem !important;
+                border-radius: 6px !important;
+                font-weight: 600 !important;
+                transition: all 0.2s !important;
+            }
+
+            .btn-nav-login:hover {
+                background: var(--gold) !important;
+                color: var(--navy) !important;
+                border-color: var(--gold) !important;
+            }
+
+            .btn-nav-register {
+                background: var(--gold) !important;
+                border: 1px solid var(--gold) !important;
+                color: var(--navy) !important;
+                padding: 0.4rem 1.2rem !important;
+                border-radius: 6px !important;
+                font-weight: 700 !important;
+                transition: all 0.2s !important;
+            }
+
+            .btn-nav-register:hover {
+                background: var(--gold-light) !important;
+                border-color: var(--gold-light) !important;
+            }
+
+            .user-badge {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: rgba(255,255,255,0.9);
+                font-size: 0.88rem;
+                font-weight: 500;
+            }
+
+            .user-avatar {
+                width: 32px;
+                height: 32px;
+                background: var(--gold);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                font-weight: 700;
+                color: var(--navy);
+            }
+
+            .btn-logout {
+                background: transparent;
+                border: 1px solid rgba(255,255,255,0.2);
+                color: rgba(255,255,255,0.7);
+                padding: 0.3rem 0.9rem;
+                border-radius: 6px;
+                font-size: 0.82rem;
+                cursor: pointer;
+                transition: all 0.2s;
+            }
+
+            .btn-logout:hover {
+                background: rgba(220,53,69,0.15);
+                border-color: rgba(220,53,69,0.4);
+                color: #ff6b6b;
+            }
+
+            /* MAIN CONTENT */
+            .main-content {
+                min-height: calc(100vh - 130px);
+                padding: 2rem 0;
+            }
+
+            /* FOOTER */
+            .main-footer {
+                background: var(--navy);
+                color: rgba(255,255,255,0.5);
+                text-align: center;
+                padding: 1.5rem;
+                font-size: 0.85rem;
+                margin-top: auto;
+            }
+
+            .main-footer a {
+                color: var(--gold);
+                text-decoration: none;
+            }
+
+            .main-footer a:hover {
+                color: var(--gold-light);
+            }
+
+            /* GLOBAL CARD STYLES */
+            .card {
+                border: none;
+                border-radius: 12px;
+                box-shadow: 0 2px 15px rgba(0,0,0,0.08);
+            }
+
+            .card-header {
+                background: var(--navy);
+                color: var(--white);
+                border-radius: 12px 12px 0 0 !important;
+                padding: 1rem 1.5rem;
+                font-weight: 600;
+                font-size: 1rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                border-bottom: 3px solid var(--gold);
+            }
+
+            .card-header i { color: var(--gold); }
+
+            .card-body { padding: 1.5rem; }
+
+            /* FORM STYLES */
+            .form-label {
+                font-weight: 600;
+                color: var(--navy);
+                font-size: 0.88rem;
+                margin-bottom: 0.4rem;
+            }
+
+            .form-control, .form-select {
+                border: 1.5px solid #dde2eb;
+                border-radius: 8px;
+                padding: 0.6rem 1rem;
+                font-size: 0.92rem;
+                transition: all 0.2s;
+                background: #fff;
+            }
+
+            .form-control:focus, .form-select:focus {
+                border-color: var(--gold);
+                box-shadow: 0 0 0 3px rgba(201,168,76,0.15);
+            }
+
+            /* BUTTONS */
+            .btn-primary-custom {
+                background: var(--navy);
+                color: var(--white);
+                border: none;
+                border-radius: 8px;
+                padding: 0.65rem 1.8rem;
+                font-weight: 600;
+                font-size: 0.92rem;
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+
+            .btn-primary-custom:hover {
+                background: var(--navy-mid);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 15px rgba(10,22,40,0.3);
+            }
+
+            .btn-gold {
+                background: var(--gold);
+                color: var(--navy);
+                border: none;
+                border-radius: 8px;
+                padding: 0.65rem 1.8rem;
+                font-weight: 700;
+                font-size: 0.92rem;
+                transition: all 0.2s;
+                cursor: pointer;
+            }
+
+            .btn-gold:hover {
+                background: var(--gold-light);
+                transform: translateY(-1px);
+                box-shadow: 0 4px 15px rgba(201,168,76,0.4);
+            }
+
+            .btn-outline-custom {
+                background: transparent;
+                color: var(--navy);
+                border: 1.5px solid #dde2eb;
+                border-radius: 8px;
+                padding: 0.65rem 1.8rem;
+                font-weight: 600;
+                font-size: 0.92rem;
+                transition: all 0.2s;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            .btn-outline-custom:hover {
+                border-color: var(--navy);
+                background: var(--navy);
+                color: var(--white);
+            }
+
+            /* PAGE HEADER */
+            .page-header {
+                background: var(--navy);
+                color: var(--white);
+                padding: 2rem 0;
+                margin-bottom: 2rem;
+            }
+
+            .page-header h1 {
+                font-size: 1.8rem;
+                font-weight: 700;
+                margin: 0;
+            }
+
+            .page-header h1 span { color: var(--gold); }
+
+            .page-header p {
+                color: rgba(255,255,255,0.6);
+                margin: 0.3rem 0 0;
+                font-size: 0.92rem;
+            }
+
+            /* BADGE */
+            .badge-gold {
+                background: rgba(201,168,76,0.15);
+                color: var(--gold-dark);
+                border: 1px solid rgba(201,168,76,0.3);
+                border-radius: 20px;
+                padding: 0.25rem 0.8rem;
+                font-size: 0.78rem;
+                font-weight: 600;
+            }
+    </style>
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AI_Resume</a>
-                <a class="nav-link" asp-controller="Resume" asp-action="Index">My Resumes</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+    <nav class="main-navbar">
+        <div class="d-flex align-items-center justify-content-between" style="max-width:1200px; margin:0 auto;">
+            <a class="navbar-brand-custom" asp-controller="Home" asp-action="Index">
+                <div class="brand-icon"><i class="fas fa-file-alt"></i></div>
+                <span class="brand-text">AI <span>Resume</span> Studio</span>
+            </a>
 
-                    <ul class="navbar-nav ms-auto">
-                        @if (SignInManager.IsSignedIn(User))
-                        {
-                            <li class="nav-item">
-                                <span class="nav-link text-dark">
-                                    👋 @UserManager.GetUserName(User)
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <form asp-controller="Account" asp-action="Logout" method="post">
-                                    <button type="submit" class="btn btn-outline-danger btn-sm mt-1">Logout</button>
-                                </form>
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
-                            </li>
-                        }
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+            <ul class="nav-links">
+                <li><a asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i> Home</a></li>
+                <li><a asp-controller="Resume" asp-action="Index"><i class="fas fa-folder-open"></i> My Resumes</a></li>
+                <li><a asp-controller="Resume" asp-action="Create"><i class="fas fa-plus-circle"></i> Create</a></li>
+                <div class="nav-divider"></div>
+
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <li>
+                        <div class="user-badge">
+                            <div class="user-avatar">@(UserManager.GetUserName(User)?[0].ToString().ToUpper())</div>
+                            <span>@UserManager.GetUserName(User)</span>
+                        </div>
+                    </li>
+                    <li>
+                        <form asp-controller="Account" asp-action="Logout" method="post" style="margin:0;">
+                            <button type="submit" class="btn-logout"><i class="fas fa-sign-out-alt"></i> Logout</button>
+                        </form>
+                    </li>
+                }
+                else
+                {
+                    <li><a class="btn-nav-login" asp-controller="Account" asp-action="Login">Login</a></li>
+                    <li><a class="btn-nav-register" asp-controller="Account" asp-action="Register">Get Started</a></li>
+                }
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        @RenderBody()
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - AI_Resume - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+    <footer class="main-footer">
+        <div>&copy; 2026 AI Resume Studio &mdash; <a asp-controller="Home" asp-action="Privacy">Privacy Policy</a></div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

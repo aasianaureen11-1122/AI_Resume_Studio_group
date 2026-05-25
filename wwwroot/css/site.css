@@ -1,31 +1,114 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+:root {
+    --navy: #0a1628;
+    --navy-light: #112240;
+    --navy-mid: #1a3a6b;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-dark: #a07830;
+    --white: #ffffff;
+    --off-white: #f4f6fa;
+    --text-muted: #8892a4;
 }
 
 body {
-  margin-bottom: 60px;
+    background-color: var(--off-white);
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+/* Focus styles */
+.btn:focus, .btn:active:focus,
+.btn-link.nav-link:focus,
+.form-control:focus,
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(201,168,76,0.4);
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 0;
+}
+
+/* Floating label fixes */
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
+    color: var(--bs-secondary-color);
+    text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
+    text-align: start;
+}
+
+/* Input group text */
+.input-group-text {
+    font-size: 0.88rem;
+}
+
+/* Smooth transitions globally */
+a, button, .card {
+    transition: all 0.2s ease;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--off-white);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--navy-mid);
+    border-radius: 3px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--gold);
+    }
+
+/* Alert styling */
+.alert-danger {
+    background: #fff3f3;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    border-radius: 10px;
+}
+
+/* Validation */
+.text-danger {
+    font-size: 0.82rem;
+}
+
+/* Table styling */
+.table th {
+    background: var(--navy);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.85rem;
+    border: none;
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+    border-color: #edf0f5;
+}
+
+.table tbody tr:hover {
+    background: rgba(201,168,76,0.05);
 }

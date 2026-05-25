@@ -1,39 +1,582 @@
-﻿@model Resume
+@model Resume
 @using AI_Resume.Models
+@{
+    ViewData["Title"] = "Create Resume";
+}
 
-<div class="container mt-4">
-    <h2>Create Resume</h2>
-    <form asp-action="Create" method="post">
-        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="ph-icon"><i class="fas fa-plus-circle"></i></div>
+                <div>
+                    <h1>Create <span>New Resume</span></h1>
+                    <p>Fill in your details — AI will analyze and score it automatically</p>
+                </div>
+            </div>
+            <a asp-action="Index" class="btn-outline-custom">
+                <i class="fas fa-arrow-left"></i> My Resumes
+            </a>
+        </div>
+    </div>
+</div>
 
-        <div class="card mb-3">
-            <div class="card-header">Personal Information</div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <label asp-for="FullName" class="form-label"></label>
-                    <input asp-for="FullName" class="form-control" />
-                    <span asp-validation-for="FullName" class="text-danger"></span>
+<div class="container" style="max-width:860px;padding-bottom:3rem;">
+
+    <!-- PROGRESS STEPS -->
+    <div class="progress-steps">
+        <div class="ps-step active" id="tab-btn-1" onclick="switchTab(1)">
+            <div class="ps-num">1</div>
+            <div class="ps-label">Basic Info</div>
+        </div>
+        <div class="ps-line"></div>
+        <div class="ps-step" id="tab-btn-2" onclick="switchTab(2)">
+            <div class="ps-num">2</div>
+            <div class="ps-label">Education</div>
+        </div>
+        <div class="ps-line"></div>
+        <div class="ps-step" id="tab-btn-3" onclick="switchTab(3)">
+            <div class="ps-num">3</div>
+            <div class="ps-label">Experience</div>
+        </div>
+        <div class="ps-line"></div>
+        <div class="ps-step" id="tab-btn-4" onclick="switchTab(4)">
+            <div class="ps-num">4</div>
+            <div class="ps-label">Skills</div>
+        </div>
+    </div>
+
+    <form asp-action="Create" method="post" id="resumeForm">
+        <div asp-validation-summary="ModelOnly" class="form-alert"></div>
+
+        <!-- TAB 1: BASIC INFO -->
+        <div class="form-tab active" id="tab-1">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="fch-icon"><i class="fas fa-user"></i></div>
+                    <div>
+                        <div class="fch-title">Personal Information</div>
+                        <div class="fch-sub">Your basic contact and profile details</div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label asp-for="Email" class="form-label"></label>
-                    <input asp-for="Email" class="form-control" />
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label asp-for="FullName" class="form-lbl">Full Name <span class="req">*</span></label>
+                        <input asp-for="FullName" class="form-inp" placeholder="e.g. John Smith" />
+                        <span asp-validation-for="FullName" class="form-err"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email" class="form-lbl">Email Address <span class="req">*</span></label>
+                        <input asp-for="Email" class="form-inp" placeholder="you@example.com" />
+                        <span asp-validation-for="Email" class="form-err"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Phone" class="form-lbl">Phone Number</label>
+                        <input asp-for="Phone" class="form-inp" placeholder="+1 234 567 8900" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="JobTitle" class="form-lbl">Job Title / Target Role</label>
+                        <input asp-for="JobTitle" class="form-inp" placeholder="e.g. Software Engineer" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Location" class="form-lbl">Location</label>
+                        <input asp-for="Location" class="form-inp" placeholder="e.g. New York, NY" />
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="LinkedIn" class="form-lbl">LinkedIn URL</label>
+                        <input asp-for="LinkedIn" class="form-inp" placeholder="linkedin.com/in/yourname" />
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label asp-for="Phone" class="form-label"></label>
-                    <input asp-for="Phone" class="form-control" />
+                <div class="form-group">
+                    <label asp-for="Summary" class="form-lbl">Professional Summary</label>
+                    <textarea asp-for="Summary" class="form-inp form-textarea" rows="4"
+                              placeholder="Write 3–5 sentences about your experience, strengths, and career goals..."></textarea>
+                    <div class="form-hint">A strong summary significantly boosts your AI score.</div>
                 </div>
-                <div class="mb-3">
-                    <label asp-for="JobTitle" class="form-label"></label>
-                    <input asp-for="JobTitle" class="form-control" />
-                </div>
-                <div class="mb-3">
-                    <label asp-for="Summary" class="form-label"></label>
-                    <textarea asp-for="Summary" class="form-control" rows="4"></textarea>
-                </div>
+            </div>
+            <div class="tab-nav">
+                <div></div>
+                <button type="button" class="btn-next" onclick="switchTab(2)">
+                    Next: Education <i class="fas fa-arrow-right"></i>
+                </button>
             </div>
         </div>
 
-        <button type="submit" class="btn btn-success">Save Resume</button>
-        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+        <!-- TAB 2: EDUCATION -->
+        <div class="form-tab" id="tab-2">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="fch-icon"><i class="fas fa-graduation-cap"></i></div>
+                    <div>
+                        <div class="fch-title">Education</div>
+                        <div class="fch-sub">Add your academic background</div>
+                    </div>
+                    <button type="button" class="btn-add-section ms-auto" onclick="addEducation()">
+                        <i class="fas fa-plus"></i> Add Education
+                    </button>
+                </div>
+                <div id="educationContainer">
+                    <div class="section-entry" id="edu-0">
+                        <div class="entry-header">
+                            <span class="entry-num">Education #1</span>
+                            <button type="button" class="btn-remove" onclick="removeEntry('edu-0')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label class="form-lbl">Degree</label>
+                                <input name="Educations[0].Degree" class="form-inp" placeholder="e.g. Bachelor of Science" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-lbl">Field of Study</label>
+                                <input name="Educations[0].FieldOfStudy" class="form-inp" placeholder="e.g. Computer Science" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-lbl">Institution</label>
+                                <input name="Educations[0].Institution" class="form-inp" placeholder="University name" />
+                            </div>
+                            <div class="form-group"></div>
+                            <div class="form-group">
+                                <label class="form-lbl">Start Year</label>
+                                <input name="Educations[0].StartYear" type="number" class="form-inp" placeholder="2018" min="1950" max="2030" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-lbl">End Year</label>
+                                <input name="Educations[0].EndYear" type="number" class="form-inp" placeholder="2022" min="1950" max="2030" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Description (optional)</label>
+                            <textarea name="Educations[0].Description" class="form-inp form-textarea" rows="2"
+                                      placeholder="Relevant coursework, honors, GPA, activities..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-nav">
+                <button type="button" class="btn-back" onclick="switchTab(1)">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button type="button" class="btn-next" onclick="switchTab(3)">
+                    Next: Experience <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 3: WORK EXPERIENCE -->
+        <div class="form-tab" id="tab-3">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="fch-icon"><i class="fas fa-briefcase"></i></div>
+                    <div>
+                        <div class="fch-title">Work Experience</div>
+                        <div class="fch-sub">List your professional experience</div>
+                    </div>
+                    <button type="button" class="btn-add-section ms-auto" onclick="addExperience()">
+                        <i class="fas fa-plus"></i> Add Experience
+                    </button>
+                </div>
+                <div id="experienceContainer">
+                    <div class="section-entry" id="exp-0">
+                        <div class="entry-header">
+                            <span class="entry-num">Experience #1</span>
+                            <button type="button" class="btn-remove" onclick="removeEntry('exp-0')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label class="form-lbl">Job Title</label>
+                                <input name="WorkExperiences[0].JobTitle" class="form-inp" placeholder="e.g. Software Engineer" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-lbl">Company</label>
+                                <input name="WorkExperiences[0].Company" class="form-inp" placeholder="Company name" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-lbl">Location</label>
+                                <input name="WorkExperiences[0].Location" class="form-inp" placeholder="e.g. Remote / New York" />
+                            </div>
+                            <div class="form-group">
+                                <label class="form-lbl">Currently Working Here</label>
+                                <div class="toggle-wrap">
+                                    <input type="checkbox" name="WorkExperiences[0].IsCurrent" id="isCurrent-0"
+                                           class="toggle-check" onchange="toggleEndDate(this, 'endDate-0')" value="true" />
+                                    <label for="isCurrent-0" class="toggle-label">Yes, this is my current job</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-lbl">Start Date</label>
+                                <input name="WorkExperiences[0].StartDate" type="date" class="form-inp" />
+                            </div>
+                            <div class="form-group" id="endDate-0">
+                                <label class="form-lbl">End Date</label>
+                                <input name="WorkExperiences[0].EndDate" type="date" class="form-inp" />
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-lbl">Description & Achievements</label>
+                            <textarea name="WorkExperiences[0].Description" class="form-inp form-textarea" rows="3"
+                                      placeholder="Describe responsibilities, achievements, and impact. Use numbers where possible (e.g. Improved performance by 30%)..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="tab-nav">
+                <button type="button" class="btn-back" onclick="switchTab(2)">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button type="button" class="btn-next" onclick="switchTab(4)">
+                    Next: Skills <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- TAB 4: SKILLS -->
+        <div class="form-tab" id="tab-4">
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="fch-icon"><i class="fas fa-tools"></i></div>
+                    <div>
+                        <div class="fch-title">Skills</div>
+                        <div class="fch-sub">Add your technical and soft skills</div>
+                    </div>
+                    <button type="button" class="btn-add-section ms-auto" onclick="addSkill()">
+                        <i class="fas fa-plus"></i> Add Skill
+                    </button>
+                </div>
+                <div id="skillsContainer">
+                    <div class="skill-row" id="skill-0">
+                        <input name="Skills[0].Name" class="form-inp skill-name" placeholder="e.g. C#, Python, Leadership..." />
+                        <select name="Skills[0].Level" class="form-inp skill-level">
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate" selected>Intermediate</option>
+                            <option value="Expert">Expert</option>
+                        </select>
+                        <button type="button" class="btn-remove-skill" onclick="removeEntry('skill-0')">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="skills-hint">
+                    <i class="fas fa-lightbulb"></i>
+                    Add 6–10 skills for the best AI score. Include both technical (C#, SQL) and soft skills (Leadership, Communication).
+                </div>
+            </div>
+
+            <!-- AI NOTICE -->
+            <div class="ai-notice">
+                <div class="ai-notice-icon"><i class="fas fa-robot"></i></div>
+                <div>
+                    <div class="ai-notice-title">AI Analysis Runs Automatically</div>
+                    <div class="ai-notice-text">After you submit, Groq AI will instantly score your resume, detect skill gaps, and provide improvement suggestions. Results appear on the next page.</div>
+                </div>
+            </div>
+
+            <div class="tab-nav">
+                <button type="button" class="btn-back" onclick="switchTab(3)">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <button type="submit" class="btn-submit">
+                    <i class="fas fa-paper-plane"></i> Create Resume & Analyze with AI
+                </button>
+            </div>
+        </div>
+
     </form>
 </div>
+
+<style>
+.progress-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 2rem;
+    padding: 1.5rem 0;
+}
+.ps-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+.ps-num {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: #edf0f7;
+    color: var(--text-muted);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem;
+    border: 2px solid #edf0f7;
+    transition: all 0.25s;
+}
+.ps-label { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); transition: color 0.25s; }
+.ps-step.active .ps-num { background: var(--navy); color: var(--gold); border-color: var(--navy); }
+.ps-step.active .ps-label { color: var(--navy); }
+.ps-step.done .ps-num { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+.ps-step.done .ps-label { color: var(--gold-dark); }
+.ps-line { flex: 1; height: 2px; background: #edf0f7; max-width: 80px; margin: 0 0.5rem; margin-bottom: 20px; }
+
+.form-tab { display: none; }
+.form-tab.active { display: block; }
+
+.form-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #edf0f7;
+    padding: 1.75rem;
+    margin-bottom: 1.25rem;
+}
+.form-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f2f6;
+    flex-wrap: wrap;
+}
+.fch-icon {
+    width: 40px; height: 40px;
+    background: rgba(10,22,40,0.06);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--navy); font-size: 1rem;
+    flex-shrink: 0;
+}
+.fch-title { font-weight: 700; font-size: 1rem; color: var(--navy); }
+.fch-sub { font-size: 0.78rem; color: var(--text-muted); }
+
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem 1.25rem;
+    margin-bottom: 1rem;
+}
+@@media(max-width:600px) { .form-grid-2 { grid-template-columns: 1fr; } }
+
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-lbl { font-size: 0.83rem; font-weight: 600; color: var(--navy); }
+.req { color: #dc3545; }
+.form-inp {
+    border: 1.5px solid #dde2eb;
+    border-radius: 8px;
+    padding: 0.65rem 0.9rem;
+    font-size: 0.9rem;
+    color: var(--navy);
+    background: #fff;
+    outline: none;
+    transition: all 0.2s;
+    width: 100%;
+}
+.form-inp:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(201,168,76,0.1); }
+.form-textarea { resize: vertical; min-height: 90px; }
+.form-hint { font-size: 0.75rem; color: var(--text-muted); margin-top: 3px; }
+.form-err { font-size: 0.78rem; color: #dc3545; }
+.form-alert {
+    background: #fff3f3; border: 1px solid #f5c6cb; color: #721c24;
+    border-radius: 10px; padding: 0.75rem 1rem; font-size: 0.85rem; margin-bottom: 1.25rem;
+}
+
+/* Section entries */
+.section-entry {
+    background: var(--off-white);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 1rem;
+    border: 1px solid #edf0f7;
+}
+.entry-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+}
+.entry-num { font-size: 0.8rem; font-weight: 700; color: var(--navy-mid); text-transform: uppercase; letter-spacing: 0.05em; }
+.btn-remove {
+    background: rgba(220,53,69,0.08); border: none;
+    color: #dc3545; border-radius: 6px;
+    width: 28px; height: 28px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 0.8rem;
+    transition: all 0.2s;
+}
+.btn-remove:hover { background: #dc3545; color: #fff; }
+
+/* Skills row */
+.skill-row {
+    display: flex; gap: 0.75rem; align-items: center;
+    margin-bottom: 0.6rem;
+}
+.skill-name { flex: 2; }
+.skill-level { flex: 1; }
+.btn-remove-skill {
+    background: rgba(220,53,69,0.08); border: none;
+    color: #dc3545; border-radius: 6px;
+    width: 34px; height: 38px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 0.85rem;
+    transition: all 0.2s;
+}
+.btn-remove-skill:hover { background: #dc3545; color: #fff; }
+.skills-hint {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.78rem; color: var(--text-muted);
+    background: rgba(201,168,76,0.07);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-radius: 8px; padding: 0.75rem 1rem;
+    margin-top: 0.75rem; line-height: 1.5;
+}
+.skills-hint i { color: var(--gold-dark); margin-top: 2px; flex-shrink: 0; }
+
+.btn-add-section {
+    background: rgba(10,22,40,0.06);
+    color: var(--navy);
+    border: 1.5px solid rgba(10,22,40,0.12);
+    border-radius: 8px;
+    padding: 0.45rem 1rem;
+    font-size: 0.82rem; font-weight: 600;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: 6px;
+    transition: all 0.2s;
+}
+.btn-add-section:hover { background: var(--navy); color: #fff; }
+
+.toggle-wrap { display: flex; align-items: center; gap: 8px; padding-top: 0.4rem; }
+.toggle-check { width: 15px; height: 15px; accent-color: var(--navy); cursor: pointer; }
+.toggle-label { font-size: 0.84rem; color: var(--text-muted); cursor: pointer; }
+
+/* AI notice */
+.ai-notice {
+    display: flex; align-items: flex-start; gap: 14px;
+    background: var(--navy); border-radius: 12px;
+    padding: 1.25rem 1.5rem; margin-bottom: 1.25rem;
+}
+.ai-notice-icon {
+    width: 38px; height: 38px; flex-shrink: 0;
+    background: rgba(201,168,76,0.15); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold); font-size: 1.1rem;
+}
+.ai-notice-title { font-weight: 700; color: #fff; font-size: 0.9rem; margin-bottom: 0.3rem; }
+.ai-notice-text { font-size: 0.8rem; color: rgba(255,255,255,0.55); line-height: 1.6; }
+
+/* Tab nav */
+.tab-nav { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.btn-back {
+    background: transparent; color: var(--text-muted);
+    border: 1.5px solid #dde2eb; border-radius: 8px;
+    padding: 0.7rem 1.4rem; font-size: 0.88rem; font-weight: 600;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+    transition: all 0.2s;
+}
+.btn-back:hover { border-color: var(--navy); color: var(--navy); }
+.btn-next {
+    background: var(--navy); color: #fff;
+    border: none; border-radius: 8px;
+    padding: 0.7rem 1.6rem; font-size: 0.88rem; font-weight: 700;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 7px;
+    transition: all 0.2s;
+}
+.btn-next:hover { background: var(--navy-mid); transform: translateY(-1px); }
+.btn-submit {
+    background: var(--gold); color: var(--navy);
+    border: none; border-radius: 8px;
+    padding: 0.8rem 2rem; font-size: 0.95rem; font-weight: 800;
+    cursor: pointer; display: inline-flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+}
+.btn-submit:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(201,168,76,0.3); }
+</style>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+    let eduCount = 1, expCount = 1, skillCount = 1;
+
+    function switchTab(n) {
+        document.querySelectorAll('.form-tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.ps-step').forEach((s, i) => {
+            s.classList.remove('active', 'done');
+            if (i + 1 < n) s.classList.add('done');
+            if (i + 1 === n) s.classList.add('active');
+        });
+        document.getElementById('tab-' + n).classList.add('active');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function removeEntry(id) {
+        const el = document.getElementById(id);
+        if (el) el.remove();
+    }
+
+    function addEducation() {
+        const i = eduCount++;
+        const html = `
+        <div class="section-entry" id="edu-${i}">
+            <div class="entry-header">
+                <span class="entry-num">Education #${i + 1}</span>
+                <button type="button" class="btn-remove" onclick="removeEntry('edu-${i}')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group"><label class="form-lbl">Degree</label><input name="Educations[${i}].Degree" class="form-inp" placeholder="e.g. Master of Science" /></div>
+                <div class="form-group"><label class="form-lbl">Field of Study</label><input name="Educations[${i}].FieldOfStudy" class="form-inp" placeholder="e.g. Data Science" /></div>
+                <div class="form-group"><label class="form-lbl">Institution</label><input name="Educations[${i}].Institution" class="form-inp" placeholder="University name" /></div>
+                <div class="form-group"></div>
+                <div class="form-group"><label class="form-lbl">Start Year</label><input name="Educations[${i}].StartYear" type="number" class="form-inp" placeholder="2020" /></div>
+                <div class="form-group"><label class="form-lbl">End Year</label><input name="Educations[${i}].EndYear" type="number" class="form-inp" placeholder="2022" /></div>
+            </div>
+            <div class="form-group"><label class="form-lbl">Description</label><textarea name="Educations[${i}].Description" class="form-inp form-textarea" rows="2" placeholder="Coursework, GPA, honors..."></textarea></div>
+        </div>`;
+        document.getElementById('educationContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addExperience() {
+        const i = expCount++;
+        const html = `
+        <div class="section-entry" id="exp-${i}">
+            <div class="entry-header">
+                <span class="entry-num">Experience #${i + 1}</span>
+                <button type="button" class="btn-remove" onclick="removeEntry('exp-${i}')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="form-grid-2">
+                <div class="form-group"><label class="form-lbl">Job Title</label><input name="WorkExperiences[${i}].JobTitle" class="form-inp" placeholder="e.g. Backend Developer" /></div>
+                <div class="form-group"><label class="form-lbl">Company</label><input name="WorkExperiences[${i}].Company" class="form-inp" placeholder="Company name" /></div>
+                <div class="form-group"><label class="form-lbl">Location</label><input name="WorkExperiences[${i}].Location" class="form-inp" placeholder="Remote / City" /></div>
+                <div class="form-group">
+                    <label class="form-lbl">Currently Working Here</label>
+                    <div class="toggle-wrap">
+                        <input type="checkbox" name="WorkExperiences[${i}].IsCurrent" id="isCurrent-${i}" class="toggle-check" onchange="toggleEndDate(this,'endDate-${i}')" value="true" />
+                        <label for="isCurrent-${i}" class="toggle-label">Yes, current job</label>
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-lbl">Start Date</label><input name="WorkExperiences[${i}].StartDate" type="date" class="form-inp" /></div>
+                <div class="form-group" id="endDate-${i}"><label class="form-lbl">End Date</label><input name="WorkExperiences[${i}].EndDate" type="date" class="form-inp" /></div>
+            </div>
+            <div class="form-group"><label class="form-lbl">Description & Achievements</label><textarea name="WorkExperiences[${i}].Description" class="form-inp form-textarea" rows="3" placeholder="Key responsibilities and achievements..."></textarea></div>
+        </div>`;
+        document.getElementById('experienceContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function addSkill() {
+        const i = skillCount++;
+        const html = `
+        <div class="skill-row" id="skill-${i}">
+            <input name="Skills[${i}].Name" class="form-inp skill-name" placeholder="e.g. React, Python, Agile..." />
+            <select name="Skills[${i}].Level" class="form-inp skill-level">
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate" selected>Intermediate</option>
+                <option value="Expert">Expert</option>
+            </select>
+            <button type="button" class="btn-remove-skill" onclick="removeEntry('skill-${i}')"><i class="fas fa-times"></i></button>
+        </div>`;
+        document.getElementById('skillsContainer').insertAdjacentHTML('beforeend', html);
+    }
+
+    function toggleEndDate(checkbox, endDateId) {
+        const el = document.getElementById(endDateId);
+        if (el) el.style.display = checkbox.checked ? 'none' : 'flex';
+    }
+    </script>
+}

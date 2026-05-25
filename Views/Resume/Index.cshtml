@@ -1,53 +1,356 @@
-﻿@model List<Resume>
+@model List<Resume>
 @using AI_Resume.Models
-@if (TempData["AIScore"] != null)
-{
-    <div class="alert alert-success mt-3">
-        <h4>AI Resume Analysis</h4>
-        <p><strong>Score:</strong> @TempData["AIScore"] / 100</p>
-        <p><strong>Summary:</strong> @TempData["AISummary"]</p>
-        <p><strong>Skill Gaps:</strong> @TempData["AISkillGaps"]</p>
-        <p><strong>Improvements:</strong> @TempData["AIImprovements"]</p>
-    </div>
+
+@{
+    ViewData["Title"] = "My Resumes";
 }
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2>My Resumes</h2>
-        <a asp-action="Create" class="btn btn-primary">+ New Resume</a>
 
-        <a href="/Resume/UploadResume" class="btn btn-outline-success me-2">
-    📄 Upload & Analyze Resume
-</a>
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div style="width:48px;height:48px;background:rgba(201,168,76,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-folder-open" style="color:var(--gold);font-size:1.3rem;"></i>
+                </div>
+                <div>
+                    <h1><span>My</span> Resumes</h1>
+                    <p>@Model.Count resume(s) in your account</p>
+                </div>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+                <a asp-action="UploadResume" class="btn-outline-custom">
+                    <i class="fas fa-upload"></i> Upload & Analyze
+                </a>
+                <a asp-action="Create" class="btn-gold">
+                    <i class="fas fa-plus"></i> New Resume
+                </a>
+            </div>
+        </div>
     </div>
+</div>
 
- 
+<div class="container" style="max-width:1100px;">
 
+    <!-- AI FEEDBACK BANNER -->
+    @if (TempData["AIScore"] != null)
+    {
+        <div class="ai-banner">
+            <div class="ai-banner-header">
+                <div class="ai-banner-icon"><i class="fas fa-robot"></i></div>
+                <div>
+                    <div class="ai-banner-title">AI Resume Analysis Complete</div>
+                    <div class="ai-banner-sub">Your resume was analyzed immediately after creation</div>
+                </div>
+                <div class="ai-score-badge">@TempData["AIScore"]<span>/100</span></div>
+            </div>
+            <div class="ai-banner-grid">
+                <div class="ai-banner-item">
+                    <div class="ai-banner-item-label"><i class="fas fa-comment-dots"></i> Summary</div>
+                    <div class="ai-banner-item-val">@TempData["AISummary"]</div>
+                </div>
+                <div class="ai-banner-item">
+                    <div class="ai-banner-item-label"><i class="fas fa-search"></i> Skill Gaps</div>
+                    <div class="ai-banner-item-val">@TempData["AISkillGaps"]</div>
+                </div>
+                <div class="ai-banner-item">
+                    <div class="ai-banner-item-label"><i class="fas fa-lightbulb"></i> Improvements</div>
+                    <div class="ai-banner-item-val">@TempData["AIImprovements"]</div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- EMPTY STATE -->
     @if (!Model.Any())
     {
-        <p class="text-muted">You haven't created any resumes yet.</p>
+        <div class="empty-state">
+            <div class="empty-icon"><i class="fas fa-file-alt"></i></div>
+            <h3>No Resumes Yet</h3>
+            <p>Create your first resume and let AI analyze and improve it for you.</p>
+            <div class="d-flex gap-2 justify-content-center flex-wrap">
+                <a asp-action="Create" class="btn-gold">
+                    <i class="fas fa-plus"></i> Create First Resume
+                </a>
+                <a asp-action="UploadResume" class="btn-outline-custom">
+                    <i class="fas fa-upload"></i> Upload Existing
+                </a>
+            </div>
+        </div>
     }
     else
     {
-        <div class="row">
+        <!-- RESUME CARDS GRID -->
+        <div class="resume-grid">
             @foreach (var resume in Model)
             {
-                <div class="col-md-4 mb-3">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">@resume.FullName</h5>
-                            <p class="card-text text-muted">@resume.JobTitle</p>
-                            <p class="card-text"><small>Created: @resume.CreatedAt.ToShortDateString()</small></p>
-                            <a asp-action="Details" asp-route-id="@resume.Id" class="btn btn-sm btn-outline-primary">View</a>
-                            <a asp-action="Edit" asp-route-id="@resume.Id" class="btn btn-sm btn-outline-secondary">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@resume.Id" class="btn btn-sm btn-outline-danger">Delete</a>
-                            <a asp-action="GenerateAI" asp-route-id="@resume.Id" 
-   class="btn btn-sm btn-success">
-   ✨ Generate AI Resume
-</a>
+                <div class="resume-card">
+                    <div class="rc-top">
+                        <div class="rc-avatar">@(resume.FullName.Length > 0 ? resume.FullName[0].ToString().ToUpper() : "?")</div>
+                        <div class="rc-info">
+                            <div class="rc-name">@resume.FullName</div>
+                            <div class="rc-role">@(string.IsNullOrEmpty(resume.JobTitle) ? "No job title set" : resume.JobTitle)</div>
                         </div>
+                        @if (resume.AIScore != null)
+                        {
+                            <div class="rc-score-badge @(resume.AIScore >= 75 ? "score-high" : resume.AIScore >= 50 ? "score-mid" : "score-low")">
+                                @resume.AIScore
+                            </div>
+                        }
+                    </div>
+
+                    <div class="rc-meta">
+                        <span><i class="fas fa-envelope"></i> @resume.Email</span>
+                        <span><i class="fas fa-calendar-alt"></i> @resume.CreatedAt.ToString("MMM d, yyyy")</span>
+                        @if (!string.IsNullOrEmpty(resume.Template))
+                        {
+                            <span><i class="fas fa-palette"></i> @resume.Template</span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrEmpty(resume.Summary))
+                    {
+                        <div class="rc-summary">@(resume.Summary.Length > 110 ? resume.Summary.Substring(0, 110) + "…" : resume.Summary)</div>
+                    }
+
+                    @if (resume.AIScore != null)
+                    {
+                        <div class="rc-score-bar-wrap">
+                            <div class="rc-score-bar-label">
+                                <span>AI Score</span>
+                                <span>@resume.AIScore / 100</span>
+                            </div>
+                            <div class="rc-score-bar-track">
+                                <div class="rc-score-bar-fill @(resume.AIScore >= 75 ? "fill-high" : resume.AIScore >= 50 ? "fill-mid" : "fill-low")"
+                                     style="width:@resume.AIScore%"></div>
+                            </div>
+                        </div>
+                    }
+
+                    <div class="rc-actions">
+                        <a asp-action="Details" asp-route-id="@resume.Id" class="rc-btn rc-btn-view">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a asp-action="Edit" asp-route-id="@resume.Id" class="rc-btn rc-btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a asp-action="GenerateAI" asp-route-id="@resume.Id" class="rc-btn rc-btn-ai">
+                            <i class="fas fa-magic"></i> AI
+                        </a>
+                        <a asp-action="Delete" asp-route-id="@resume.Id" class="rc-btn rc-btn-delete">
+                            <i class="fas fa-trash"></i>
+                        </a>
                     </div>
                 </div>
             }
         </div>
     }
 </div>
+
+<style>
+.resume-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+    gap: 1.25rem;
+    padding-bottom: 3rem;
+}
+.resume-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #edf0f7;
+    padding: 1.5rem;
+    transition: all 0.25s;
+}
+.resume-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.09);
+    border-color: rgba(201,168,76,0.3);
+}
+.rc-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+}
+.rc-avatar {
+    width: 46px; height: 46px;
+    background: var(--navy);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--gold);
+    flex-shrink: 0;
+}
+.rc-info { flex: 1; min-width: 0; }
+.rc-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.rc-role { font-size: 0.78rem; color: var(--text-muted); margin-top: 2px; }
+.rc-score-badge {
+    font-size: 1rem;
+    font-weight: 800;
+    padding: 0.3rem 0.65rem;
+    border-radius: 8px;
+    flex-shrink: 0;
+}
+.score-high { background: rgba(25,135,84,0.1); color: #198754; }
+.score-mid  { background: rgba(255,193,7,0.12); color: #856404; }
+.score-low  { background: rgba(220,53,69,0.1); color: #dc3545; }
+
+.rc-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 0.85rem;
+}
+.rc-meta span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+.rc-meta i { color: var(--gold-dark); font-size: 0.7rem; }
+
+.rc-summary {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 0.85rem;
+    padding: 0.6rem 0.75rem;
+    background: var(--off-white);
+    border-radius: 6px;
+    border-left: 3px solid rgba(201,168,76,0.35);
+}
+
+.rc-score-bar-wrap { margin-bottom: 1rem; }
+.rc-score-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-bottom: 0.3rem;
+}
+.rc-score-bar-track {
+    background: #f0f2f6;
+    border-radius: 6px;
+    height: 6px;
+    overflow: hidden;
+}
+.rc-score-bar-fill { height: 100%; border-radius: 6px; transition: width 0.8s ease; }
+.fill-high { background: linear-gradient(90deg, #198754, #20c997); }
+.fill-mid  { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+.fill-low  { background: linear-gradient(90deg, #dc3545, #f87171); }
+
+.rc-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+.rc-btn {
+    flex: 1;
+    min-width: 0;
+    text-align: center;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 0.45rem 0.5rem;
+    border-radius: 7px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.2s;
+    border: 1.5px solid transparent;
+}
+.rc-btn-view  { background: rgba(10,22,40,0.06); color: var(--navy); border-color: rgba(10,22,40,0.12); }
+.rc-btn-view:hover  { background: var(--navy); color: #fff; text-decoration: none; }
+.rc-btn-edit  { background: rgba(201,168,76,0.1); color: var(--gold-dark); border-color: rgba(201,168,76,0.25); }
+.rc-btn-edit:hover  { background: var(--gold); color: var(--navy); text-decoration: none; }
+.rc-btn-ai    { background: rgba(25,135,84,0.08); color: #198754; border-color: rgba(25,135,84,0.2); }
+.rc-btn-ai:hover    { background: #198754; color: #fff; text-decoration: none; }
+.rc-btn-delete { flex: 0; padding: 0.45rem 0.65rem; background: rgba(220,53,69,0.07); color: #dc3545; border-color: rgba(220,53,69,0.2); }
+.rc-btn-delete:hover { background: #dc3545; color: #fff; text-decoration: none; }
+
+/* AI Banner */
+.ai-banner {
+    background: var(--navy);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+    border: 1px solid rgba(201,168,76,0.2);
+}
+.ai-banner-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+.ai-banner-icon {
+    width: 40px; height: 40px;
+    background: rgba(201,168,76,0.15);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--gold);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.ai-banner-title { font-weight: 700; color: #fff; font-size: 0.95rem; }
+.ai-banner-sub { font-size: 0.75rem; color: rgba(255,255,255,0.45); }
+.ai-score-badge {
+    margin-left: auto;
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+}
+.ai-score-badge span { font-size: 0.85rem; color: rgba(255,255,255,0.4); font-weight: 400; }
+.ai-banner-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+.ai-banner-item {
+    background: rgba(255,255,255,0.05);
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+}
+.ai-banner-item-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 0.4rem;
+    font-weight: 600;
+}
+.ai-banner-item-label i { margin-right: 4px; }
+.ai-banner-item-val { font-size: 0.82rem; color: rgba(255,255,255,0.7); line-height: 1.55; }
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #edf0f7;
+    margin-bottom: 2rem;
+}
+.empty-icon {
+    width: 72px; height: 72px;
+    background: rgba(10,22,40,0.05);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    color: var(--text-muted);
+    margin: 0 auto 1.25rem;
+}
+.empty-state h3 { font-size: 1.3rem; font-weight: 700; color: var(--navy); margin-bottom: 0.5rem; }
+.empty-state p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem; }
+</style>

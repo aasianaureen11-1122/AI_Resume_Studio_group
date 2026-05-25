@@ -11,5 +11,8 @@
 
         public int ResumeId { get; set; }
         public Resume Resume { get; set; } = null!;
+
+        // Added missing property
+        public string? Description { get; set; }
     }
 }

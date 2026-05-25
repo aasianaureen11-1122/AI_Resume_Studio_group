@@ -6,7 +6,6 @@ namespace AI_Resume.Models
     {
         public int Id { get; set; }
 
-        // This links the resume to the logged-in user
         public string? UserId { get; set; }
 
         [Required(ErrorMessage = "Full name is required")]
@@ -28,18 +27,21 @@ namespace AI_Resume.Models
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        // Navigation properties (for related tables)
         public List<Education> Educations { get; set; } = new();
         public List<WorkExperience> WorkExperiences { get; set; } = new();
         public List<Skill> Skills { get; set; } = new();
 
-        // Link back to the user (Identity)
         public ApplicationUser? User { get; set; }
         public string? AIGeneratedResume { get; set; }
         public int? AIScore { get; set; }
         public string? AISummary { get; set; }
         public string? AISkillGaps { get; set; }
         public string? AIImprovements { get; set; }
-    }
 
+        // Added missing properties
+        public string? LinkedIn { get; set; }
+        public string? Location { get; set; }
+        
+        public string? Template { get; set; } = "Default";
+    }
 }

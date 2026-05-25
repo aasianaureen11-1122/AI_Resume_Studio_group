@@ -9,8 +9,8 @@
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public bool IsCurrentJob { get; set; } = false;
-
+        public bool IsCurrent { get; set; } = false;
+        public string? Location { get; set; }
         public int ResumeId { get; set; }
-        public Resume Resume { get; set; } = null!;
     }
 }

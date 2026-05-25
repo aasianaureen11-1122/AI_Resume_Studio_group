@@ -1,8 +1,803 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Home";
+}
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<AI_Resume.Models.ApplicationUser> SignInManager
+
+<!-- HERO SECTION -->
+<section class="hero-section">
+    <div class="hero-bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+    </div>
+    <div class="container hero-container">
+        <div class="hero-badge">
+            <span class="badge-dot"></span>
+            Powered by Groq AI &mdash; Llama 3.3 70B
+        </div>
+        <h1 class="hero-title">
+            Build Resumes That<br />
+            <span class="hero-title-gold">Get You Hired.</span>
+        </h1>
+        <p class="hero-subtitle">
+            AI Resume Studio helps you craft professional, ATS-optimized resumes from scratch —
+            then analyzes them with real AI to score, improve, and perfect your career story.
+        </p>
+        <div class="hero-actions">
+            @if (SignInManager.IsSignedIn(User))
+            {
+                <a asp-controller="Resume" asp-action="Create" class="btn-hero-primary">
+                    <i class="fas fa-plus-circle"></i> Create New Resume
+                </a>
+                <a asp-controller="Resume" asp-action="Index" class="btn-hero-secondary">
+                    <i class="fas fa-folder-open"></i> My Resumes
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Account" asp-action="Register" class="btn-hero-primary">
+                    <i class="fas fa-rocket"></i> Get Started Free
+                </a>
+                <a asp-controller="Account" asp-action="Login" class="btn-hero-secondary">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </a>
+            }
+        </div>
+        <div class="hero-stats">
+            <div class="hstat">
+                <div class="hstat-num">3</div>
+                <div class="hstat-label">Resume Templates</div>
+            </div>
+            <div class="hstat-divider"></div>
+            <div class="hstat">
+                <div class="hstat-num">AI</div>
+                <div class="hstat-label">Groq-Powered Analysis</div>
+            </div>
+            <div class="hstat-divider"></div>
+            <div class="hstat">
+                <div class="hstat-num">100%</div>
+                <div class="hstat-label">Data Privacy</div>
+            </div>
+            <div class="hstat-divider"></div>
+            <div class="hstat">
+                <div class="hstat-num">PDF</div>
+                <div class="hstat-label">Export Ready</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES SECTION -->
+<section class="features-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-eyebrow">Core Features</div>
+            <h2 class="section-title">Everything You Need to Stand Out</h2>
+            <p class="section-sub">From guided resume building to AI-powered analysis — all in one platform built with ASP.NET Core MVC.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card feature-card-accent">
+                <div class="feature-icon-wrap">
+                    <i class="fas fa-file-alt"></i>
+                </div>
+                <h3 class="feature-title">Smart Resume Builder</h3>
+                <p class="feature-desc">Guided step-by-step forms to capture your education, skills, and experience — then generate a polished, structured resume instantly.</p>
+                <a asp-controller="Resume" asp-action="Create" class="feature-link">Start Building <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrap">
+                    <i class="fas fa-brain"></i>
+                </div>
+                <h3 class="feature-title">AI Resume Analysis</h3>
+                <p class="feature-desc">Groq AI evaluates your resume for completeness, keyword strength, and structure — giving you a score and precise improvement tips.</p>
+                <a asp-controller="Resume" asp-action="Index" class="feature-link">Analyze Resume <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrap">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3 class="feature-title">Skill Gap Detection</h3>
+                <p class="feature-desc">AI identifies skills missing from your resume that are common in your target role — so you can address them before a recruiter does.</p>
+                <a asp-controller="Resume" asp-action="UploadResume" class="feature-link">Upload Resume <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrap">
+                    <i class="fas fa-magic"></i>
+                </div>
+                <h3 class="feature-title">AI Content Generation</h3>
+                <p class="feature-desc">Let AI write a complete, professional resume for you based on your profile. ATS-friendly, impressive, and ready to customize.</p>
+                <a asp-controller="Resume" asp-action="Create" class="feature-link">Try AI Generator <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrap">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <h3 class="feature-title">Template Gallery</h3>
+                <p class="feature-desc">Choose from Classic, Modern, and Minimal resume layouts. Switch templates anytime without re-entering your data.</p>
+                <a asp-controller="Resume" asp-action="Index" class="feature-link">Browse Templates <i class="fas fa-arrow-right"></i></a>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon-wrap">
+                    <i class="fas fa-file-pdf"></i>
+                </div>
+                <h3 class="feature-title">PDF Export</h3>
+                <p class="feature-desc">One-click export to pixel-perfect PDF. Share your resume anywhere with professional formatting preserved exactly as designed.</p>
+                <a asp-controller="Resume" asp-action="Index" class="feature-link">Export Resume <i class="fas fa-arrow-right"></i></a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section">
+    <div class="container">
+        <div class="section-header">
+            <div class="section-eyebrow">How It Works</div>
+            <h2 class="section-title">From Blank Page to Interview-Ready</h2>
+            <p class="section-sub">A clean, guided workflow — no confusion, no clutter. Four simple steps.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <div class="step-icon"><i class="fas fa-user-plus"></i></div>
+                <h3 class="step-title">Create an Account</h3>
+                <p class="step-desc">Register securely using ASP.NET Core Identity. Your resume data is always private and tied to your account only.</p>
+            </div>
+            <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <div class="step-icon"><i class="fas fa-keyboard"></i></div>
+                <h3 class="step-title">Fill Your Profile</h3>
+                <p class="step-desc">Enter your education, work experience, and skills using our clean, structured forms. Save as you go.</p>
+            </div>
+            <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <div class="step-icon"><i class="fas fa-layer-group"></i></div>
+                <h3 class="step-title">Pick a Template</h3>
+                <p class="step-desc">Choose Classic, Modern, or Minimal layout. Your resume is generated instantly and stored securely in SQL Server.</p>
+            </div>
+            <div class="step-arrow"><i class="fas fa-chevron-right"></i></div>
+            <div class="step-card">
+                <div class="step-number">04</div>
+                <div class="step-icon"><i class="fas fa-robot"></i></div>
+                <h3 class="step-title">Analyze & Improve</h3>
+                <p class="step-desc">Run the Groq AI analyzer to get your score, detect skill gaps, and receive smart content suggestions instantly.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- RESUME MOCKUP / SHOWCASE SECTION -->
+<section class="showcase-section">
+    <div class="container">
+        <div class="showcase-inner">
+            <div class="showcase-text">
+                <div class="section-eyebrow" style="color:var(--gold-light);">AI-Powered Analysis</div>
+                <h2 class="section-title" style="color:#fff;">See Your Resume Score In Seconds</h2>
+                <p class="section-sub" style="color:rgba(255,255,255,0.6);">
+                    Upload any existing resume or build one here — our Groq AI engine (Llama 3.3 70B)
+                    reads every line and gives you a score, flags missing skills, and tells you exactly how to improve.
+                </p>
+                <ul class="showcase-list">
+                    <li><i class="fas fa-check-circle"></i> Resume score out of 100</li>
+                    <li><i class="fas fa-check-circle"></i> Missing skill identification</li>
+                    <li><i class="fas fa-check-circle"></i> Improvement suggestions</li>
+                    <li><i class="fas fa-check-circle"></i> Overall career feedback</li>
+                </ul>
+                <div class="showcase-actions">
+                    <a asp-controller="Resume" asp-action="UploadResume" class="btn-gold-solid">
+                        <i class="fas fa-upload"></i> Upload & Analyze
+                    </a>
+                    <a asp-controller="Resume" asp-action="Create" class="btn-white-outline">
+                        <i class="fas fa-plus"></i> Build New Resume
+                    </a>
+                </div>
+            </div>
+            <div class="showcase-card-wrap">
+                <!-- Fake AI Analysis Card -->
+                <div class="mock-analysis-card">
+                    <div class="mac-header">
+                        <i class="fas fa-robot mac-icon"></i>
+                        <span>AI Resume Analysis</span>
+                        <span class="mac-badge">Live</span>
+                    </div>
+                    <div class="mac-score-row">
+                        <div class="mac-score-label">Overall Score</div>
+                        <div class="mac-score-num">87<span>/100</span></div>
+                    </div>
+                    <div class="mac-bar-track">
+                        <div class="mac-bar-fill" style="width:87%"></div>
+                    </div>
+                    <div class="mac-section-title">Skill Gaps Detected</div>
+                    <div class="mac-gaps">
+                        <span class="mac-gap-pill">Docker</span>
+                        <span class="mac-gap-pill">CI/CD</span>
+                        <span class="mac-gap-pill">Cloud Azure</span>
+                    </div>
+                    <div class="mac-section-title">Top Improvements</div>
+                    <div class="mac-tip"><i class="fas fa-lightbulb"></i> Add quantified achievements to work history</div>
+                    <div class="mac-tip"><i class="fas fa-lightbulb"></i> Expand professional summary to 4+ sentences</div>
+                    <div class="mac-tip"><i class="fas fa-lightbulb"></i> Include LinkedIn and portfolio links</div>
+                    <div class="mac-pulse-row">
+                        <span class="mac-pulse-dot"></span>
+                        <span class="mac-pulse-text">Analysis complete &mdash; 3 improvements found</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="tech-section">
+    <div class="container">
+        <div class="section-eyebrow" style="text-align:center;">Built With</div>
+        <div class="tech-pills">
+            <span class="tech-pill"><i class="fas fa-code"></i> ASP.NET Core MVC</span>
+            <span class="tech-pill"><i class="fas fa-hashtag"></i> C# / OOP</span>
+            <span class="tech-pill"><i class="fas fa-database"></i> SQL Server</span>
+            <span class="tech-pill"><i class="fas fa-layer-group"></i> Entity Framework Core</span>
+            <span class="tech-pill"><i class="fas fa-palette"></i> Bootstrap 5</span>
+            <span class="tech-pill"><i class="fas fa-robot"></i> Groq AI API</span>
+            <span class="tech-pill"><i class="fas fa-file-code"></i> Razor Views</span>
+            <span class="tech-pill"><i class="fas fa-file-pdf"></i> DinkToPdf</span>
+        </div>
+    </div>
+</section>
+
+<!-- CTA SECTION -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-inner">
+            <h2 class="cta-title">Ready to Build a Resume That Gets You Hired?</h2>
+            <p class="cta-sub">Join AI Resume Studio and take full control of how your career is presented to the world.</p>
+            <div class="cta-actions">
+                @if (SignInManager.IsSignedIn(User))
+                {
+                    <a asp-controller="Resume" asp-action="Create" class="btn-hero-primary">
+                        <i class="fas fa-plus-circle"></i> Create New Resume
+                    </a>
+                    <a asp-controller="Resume" asp-action="UploadResume" class="btn-hero-secondary">
+                        <i class="fas fa-upload"></i> Upload & Analyze
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Register" class="btn-hero-primary">
+                        <i class="fas fa-rocket"></i> Create Free Account
+                    </a>
+                    <a asp-controller="Account" asp-action="Login" class="btn-hero-secondary">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+/* ── HERO ─────────────────────────────────────────────────── */
+.hero-section {
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    padding: 5rem 0 4rem;
+}
+.hero-bg-shapes { position:absolute;inset:0;pointer-events:none; }
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.06;
+    background: var(--gold);
+}
+.shape-1 { width:500px;height:500px;top:-150px;right:-100px; }
+.shape-2 { width:300px;height:300px;bottom:-80px;left:-60px; }
+.shape-3 { width:180px;height:180px;top:50%;right:20%; }
+
+.hero-container { position:relative;z-index:1;text-align:center; }
+
+.hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201,168,76,0.12);
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold-light);
+    font-size: 0.8rem;
+    font-weight: 500;
+    padding: 0.4rem 1.1rem;
+    border-radius: 50px;
+    margin-bottom: 2rem;
+    letter-spacing: 0.02em;
+}
+.badge-dot {
+    width: 7px; height: 7px;
+    background: var(--gold);
+    border-radius: 50%;
+    animation: blink 1.6s infinite;
+}<style>
+    @@keyframes blink {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.3;
+        }
+    }
+
+    .hero-title {
+        font-size: clamp(2.4rem, 5.5vw, 4rem);
+        font-weight: 800;
+        color: #fff;
+        line-height: 1.1;
+        letter-spacing: -0.02em;
+        margin-bottom: 1.5rem;
+    }
+</style>
+.hero-title-gold { color: var(--gold); }
+
+.hero-subtitle {
+    font-size: 1.05rem;
+    color: rgba(255,255,255,0.65);
+    max-width: 580px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.8;
+    font-weight: 300;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+.hero-actions { display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:3.5rem; }
+
+.btn-hero-primary {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.btn-hero-primary:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(201,168,76,0.35);
+    color: var(--navy);
+    text-decoration: none;
+}
+.btn-hero-secondary {
+    background: transparent;
+    color: rgba(255,255,255,0.85);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.8rem 2rem;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.btn-hero-secondary:hover {
+    border-color: rgba(255,255,255,0.5);
+    color: #fff;
+    background: rgba(255,255,255,0.07);
+    text-decoration: none;
+}
+
+.hero-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2.5rem;
+    flex-wrap: wrap;
+    padding-top: 2.5rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+}
+.hstat { text-align:center; }
+.hstat-num {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: var(--gold);
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+.hstat-label { font-size: 0.75rem; color: rgba(255,255,255,0.45); font-weight: 400; }
+.hstat-divider { width:1px;height:36px;background:rgba(255,255,255,0.1); }
+
+/* ── SECTION SHARED ──────────────────────────────────────── */
+.section-header { text-align:center;margin-bottom:3rem; }
+.section-eyebrow {
+    font-size: 0.72rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+.section-title {
+    font-size: clamp(1.7rem, 3.5vw, 2.4rem);
+    font-weight: 800;
+    color: var(--navy);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.8rem;
+    line-height: 1.2;
+}
+.section-sub {
+    font-size: 1rem;
+    color: var(--text-muted);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.75;
+}
+
+/* ── FEATURES ────────────────────────────────────────────── */
+.features-section { padding: 5rem 0; background: var(--off-white); }
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+}
+
+.feature-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 2rem;
+    border: 1px solid #edf0f7;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+}
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.09);
+    border-color: rgba(201,168,76,0.3);
+}
+.feature-card-accent {
+    background: var(--navy);
+    border-color: var(--navy);
+}
+.feature-card-accent .feature-title { color: #fff; }
+.feature-card-accent .feature-desc { color: rgba(255,255,255,0.6); }
+.feature-card-accent .feature-icon-wrap { background: rgba(201,168,76,0.15); color: var(--gold); }
+.feature-card-accent .feature-link { color: var(--gold); }
+.feature-card-accent .feature-link:hover { color: var(--gold-light); }
+
+.feature-icon-wrap {
+    width: 48px; height: 48px;
+    background: rgba(10,22,40,0.06);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    color: var(--navy);
+    margin-bottom: 1.2rem;
+}
+.feature-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.6rem;
+}
+.feature-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 1.2rem;
+}
+.feature-link {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--navy-mid);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: gap 0.2s;
+}
+.feature-link:hover { gap: 10px; color: var(--navy); text-decoration: none; }
+
+/* ── HOW IT WORKS ────────────────────────────────────────── */
+.how-section { padding: 5rem 0; background: #fff; }
+
+.steps-grid {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.step-card {
+    flex: 1;
+    min-width: 200px;
+    max-width: 240px;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    position: relative;
+}
+.step-number {
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    color: var(--gold);
+    margin-bottom: 0.8rem;
+}
+.step-icon {
+    width: 60px; height: 60px;
+    background: var(--navy);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+    color: var(--gold);
+    margin: 0 auto 1rem;
+    transition: all 0.2s;
+}
+.step-card:hover .step-icon {
+    background: var(--gold);
+    color: var(--navy);
+    transform: scale(1.08);
+}
+.step-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 0.5rem;
+}
+.step-desc {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+}
+.step-arrow {
+    color: rgba(201,168,76,0.4);
+    font-size: 1.2rem;
+    padding-top: 2.5rem;
+    align-self: flex-start;
+}
+
+/* ── SHOWCASE ─────────────────────────────────────────────── */
+.showcase-section {
+    background: var(--navy-light);
+    padding: 5rem 0;
+}
+.showcase-inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}<style>
+    @@media (max-width:768px)
+    {
+        .showcase-inner {
+            grid-template-columns: 1fr;
+            gap: 2.5rem;
+        }
+
+        .step-arrow {
+            display: none;
+        }
+
+        .steps-grid {
+            gap: 1rem;
+        }
+    }
+</style>
+
+.showcase-list {
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0 2rem;
+}
+.showcase-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255,255,255,0.75);
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+}
+.showcase-list li i { color: var(--gold); }
+
+.btn-gold-solid {
+    background: var(--gold);
+    color: var(--navy);
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.8rem;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    margin-right: 0.75rem;
+}
+.btn-gold-solid:hover {
+    background: var(--gold-light);
+    color: var(--navy);
+    text-decoration: none;
+    transform: translateY(-2px);
+}
+.btn-white-outline {
+    background: transparent;
+    color: rgba(255,255,255,0.8);
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 0.75rem 1.8rem;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,255,255,0.2);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.btn-white-outline:hover {
+    border-color: rgba(255,255,255,0.5);
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Mock Analysis Card */
+.mock-analysis-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.75rem;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.25);
+}
+.mac-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+    color: var(--navy);
+    font-size: 0.95rem;
+}
+.mac-icon { color: var(--gold); font-size: 1.1rem; }
+.mac-badge {
+    margin-left: auto;
+    background: rgba(25,135,84,0.1);
+    color: #198754;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 50px;
+    font-weight: 600;
+    border: 1px solid rgba(25,135,84,0.25);
+}
+.mac-score-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+.mac-score-label { font-size: 0.78rem; color: var(--text-muted); }
+.mac-score-num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1;
+}
+.mac-score-num span { font-size: 1rem; font-weight: 500; color: var(--text-muted); }
+.mac-bar-track {
+    background: #f0f2f6;
+    border-radius: 6px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 1.25rem;
+}
+.mac-bar-fill {
+    background: linear-gradient(90deg, var(--navy-mid), var(--gold));
+    height: 100%;
+    border-radius: 6px;
+}
+.mac-section-title {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    margin-top: 1rem;
+}
+.mac-gaps { display:flex;gap:0.4rem;flex-wrap:wrap;margin-bottom:0.5rem; }
+.mac-gap-pill {
+    background: rgba(201,168,76,0.1);
+    color: var(--gold-dark);
+    border: 1px solid rgba(201,168,76,0.3);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 50px;
+    font-weight: 500;
+}
+.mac-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.78rem;
+    color: var(--navy);
+    margin-bottom: 0.4rem;
+    line-height: 1.5;
+}
+.mac-tip i { color: var(--gold); margin-top: 2px; flex-shrink:0; }
+.mac-pulse-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #f0f2f6;
+}
+.mac-pulse-dot {
+    width: 8px; height: 8px;
+    background: #198754;
+    border-radius: 50%;
+    flex-shrink: 0;
+    animation: blink 1.5s infinite;
+}
+.mac-pulse-text { font-size: 0.75rem; color: var(--text-muted); font-style: italic; }
+
+/* ── TECH STRIP ───────────────────────────────────────────── */
+.tech-section {
+    padding: 3rem 0;
+    background: var(--off-white);
+    border-top: 1px solid #edf0f7;
+    border-bottom: 1px solid #edf0f7;
+}
+.tech-pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+.tech-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--navy);
+    background: #fff;
+    border: 1px solid #e2e6ed;
+    padding: 0.45rem 1rem;
+    border-radius: 50px;
+    transition: all 0.2s;
+}
+.tech-pill i { color: var(--gold); }
+.tech-pill:hover {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.05);
+}
+
+/* ── CTA ──────────────────────────────────────────────────── */
+.cta-section {
+    padding: 5rem 0;
+    background: #fff;
+}
+.cta-inner {
+    text-align: center;
+    max-width: 620px;
+    margin: 0 auto;
+}
+.cta-title {
+    font-size: clamp(1.7rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+}
+.cta-sub {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.75;
+    margin-bottom: 2rem;
+}
+.cta-actions { display:flex;gap:1rem;justify-content:center;flex-wrap:wrap; }
+</style>
