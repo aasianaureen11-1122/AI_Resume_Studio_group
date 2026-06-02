@@ -76,14 +76,44 @@ namespace AI_Resume.Services.ai_integration
                 {
                     new {
                         role = "system",
-                        content = "You are a professional resume writer. Generate a complete, professional resume based on the information provided. Format it clearly with sections: Professional Summary, Work Experience, Education, Skills. Make it ATS-friendly and impressive."
-                    },
+                        content = """
+    You are a professional resume writer. Generate a clean, modern resume.
+    
+    STRICT RULES:
+    - Do NOT write labels like "PROFESSIONAL SUMMARY:" or "EDUCATION:" as plain text in the content
+    - Use markdown: ## for section headings, ** for bold, * for bullet points
+    - Do NOT invent any information not provided
+    - Do NOT add placeholders like [Date] or [Institution]
+    - Skip any section that has no data
+    
+    OUTPUT FORMAT (use exactly this markdown structure):
+    
+    # Full Name
+    Email | Phone | Location | LinkedIn
+    
+    ---
+    
+    ## Summary
+    Write 2-3 sentence professional summary here.
+    
+    ## Education
+    **Degree in Field** — Institution
+    StartYear – EndYear
+    
+    ## Work Experience
+    **Job Title** — Company, Location
+    *Start – End*
+    * Key responsibility or achievement
+    
+    ## Skills
+    **Skill 1** (Level) · **Skill 2** (Level) · **Skill 3** (Level)
+    """ },
                     new {
                         role = "user",
                         content = "Generate a professional resume for: " + userInfo
                     }
                 },
-                temperature = 0.7,
+                temperature = 0.4,
                 max_tokens = 2000
             };
 
@@ -133,7 +163,8 @@ namespace AI_Resume.Services.ai_integration
             {
                 Content = new StringContent(json, Encoding.UTF8, "application/json")
             };
-            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _key);
+            req.Headers.Authorization =
+                new AuthenticationHeaderValue("Bearer", _key);
 
             var res = await _http.SendAsync(req);
             var raw = await res.Content.ReadAsStringAsync();

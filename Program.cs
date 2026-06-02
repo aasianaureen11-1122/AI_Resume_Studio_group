@@ -4,13 +4,18 @@ using AI_Resume.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using AI_Resume.Services.ai_integration;
+using QuestPDF.Infrastructure;
+
 
 var builder = WebApplication.CreateBuilder(args);
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
 builder.Services.AddHttpClient<IGroqAiService, GroqAiService>();
 
 // 1. EF Core + SQL Server
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<AI_Resume.Services.IPdfService, AI_Resume.Services.PdfService>();
+
 
 // 2. Identity — wired to your AppDbContext and ApplicationUser
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>

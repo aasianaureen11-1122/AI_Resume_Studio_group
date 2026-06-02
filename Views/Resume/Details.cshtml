@@ -1,63 +1,156 @@
 ﻿@model AI_Resume.Models.Resume
-
 @{
     ViewData["Title"] = "Resume Details";
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Resume Details</h2>
-        <a asp-action="Index" class="btn btn-outline-secondary">← Back</a>
-    </div>
+<style>
+    @@media print {
+        nav, header, .navbar, footer, .page-header,
+        .no-print { display: none !important; }
+        body { margin: 0; background: white; }
+        .resume-box { box-shadow: none !important; border: none !important; }
+    }
+</style>
 
-    <!-- Personal Info -->
-    <div class="card mb-3">
-        <div class="card-header bg-primary text-white">Personal Information</div>
-        <div class="card-body">
-            <table class="table table-borderless">
-                <tr><td><strong>Full Name</strong></td><td>@Model.FullName</td></tr>
-                <tr><td><strong>Email</strong></td><td>@Model.Email</td></tr>
-                <tr><td><strong>Phone</strong></td><td>@Model.Phone</td></tr>
-                <tr><td><strong>Job Title</strong></td><td>@Model.JobTitle</td></tr>
-                <tr><td><strong>Summary</strong></td><td>@Model.Summary</td></tr>
-                <tr><td><strong>Created</strong></td><td>@Model.CreatedAt.ToShortDateString()</td></tr>
-            </table>
+<div class="no-print" style="max-width:860px;margin:1.5rem auto 0;padding:0 1rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+    <a asp-action="Index" class="btn btn-outline-secondary btn-sm">← Back to My Resumes</a>
+    <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning btn-sm">✏ Edit</a>
+        <a asp-action="GenerateAI" asp-route-id="@Model.Id" class="btn btn-success btn-sm">🤖 AI Resume</a>
+        <button onclick="window.print()" class="btn btn-primary btn-sm">🖨 Print / PDF</button>
+        
+        <a asp-action="DownloadPdf" asp-route-id="@Model.Id" class="btn btn-dark btn-sm">
+    ⬇ Download PDF
+</a>
+    </div>
+</div>
+
+<div class="resume-box" style="max-width:860px;margin:1.5rem auto 3rem;padding:2.5rem;background:#fff;border:1px solid #e0e4ed;border-radius:14px;font-family:'Segoe UI',sans-serif;font-size:0.95rem;line-height:1.75;color:#1a1a2e;">
+
+    <!-- HEADER -->
+    <div style="border-bottom:3px solid #1a56db;padding-bottom:1.25rem;margin-bottom:1.5rem;">
+        <h1 style="margin:0 0 0.25rem;font-size:2rem;color:#0a1628;">@Model.FullName</h1>
+        @if (!string.IsNullOrEmpty(Model.JobTitle))
+        {
+            <div style="font-size:1.1rem;color:#1a56db;font-weight:600;margin-bottom:0.5rem;">@Model.JobTitle</div>
+        }
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;font-size:0.88rem;color:#555;">
+            @if (!string.IsNullOrEmpty(Model.Email))
+            { <span>✉ @Model.Email</span> }
+            @if (!string.IsNullOrEmpty(Model.Phone))
+            { <span>📞 @Model.Phone</span> }
+            @if (!string.IsNullOrEmpty(Model.Location))
+            { <span>📍 @Model.Location</span> }
+            @if (!string.IsNullOrEmpty(Model.LinkedIn))
+            { <span>🔗 @Model.LinkedIn</span> }
         </div>
     </div>
 
-    <!-- AI Analysis — database se -->
-    @if (Model.AIScore != null)
+    <!-- AI SCORE BADGE -->
+    @if (Model.AIScore.HasValue)
     {
-        <div class="card mb-3 border-success">
-            <div class="card-header bg-success text-white">
-                🤖 AI Resume Analysis
-            </div>
-            <div class="card-body">
-                <h4>Score: @Model.AIScore / 100</h4>
-                <p><strong>Summary:</strong> @Model.AISummary</p>
-                <p><strong>Skill Gaps:</strong> @Model.AISkillGaps</p>
-                <p><strong>Improvements:</strong> @Model.AIImprovements</p>
+        <div style="background:#f0f7ff;border:1px solid #bee3f8;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <div style="font-size:2rem;font-weight:800;color:#1a56db;">@Model.AIScore<span style="font-size:1rem;color:#888;">/100</span></div>
+            <div>
+                <div style="font-weight:700;color:#0a1628;margin-bottom:0.2rem;">AI Resume Score</div>
+                @if (!string.IsNullOrEmpty(Model.AISummary))
+                { <div style="font-size:0.85rem;color:#555;">@Model.AISummary</div> }
             </div>
         </div>
     }
 
-    <!-- AI Generated Resume — database se -->
-    @if (!string.IsNullOrEmpty(Model.AIGeneratedResume))
+    <!-- SUMMARY -->
+    @if (!string.IsNullOrEmpty(Model.Summary))
     {
-        <div class="card mb-3 border-primary">
-            <div class="card-header bg-primary text-white d-flex justify-content-between">
-                <span>✨ AI Generated Resume</span>
-                <button onclick="window.print()" class="btn btn-light btn-sm">🖨️ Print / Save PDF</button>
-            </div>
-            <div class="card-body">
-                <pre style="white-space:pre-wrap;font-family:'Segoe UI';font-size:14px;line-height:1.8">@Model.AIGeneratedResume</pre>
+        <div style="margin-bottom:1.5rem;">
+            <h2 style="font-size:1rem;font-weight:700;color:#1a56db;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e0e4ed;padding-bottom:.4rem;margin-bottom:.75rem;">
+                Professional Summary
+            </h2>
+            <p style="margin:0;color:#333;">@Model.Summary</p>
+        </div>
+    }
+
+    <!-- EDUCATION -->
+    @if (Model.Educations != null && Model.Educations.Any())
+    {
+        <div style="margin-bottom:1.5rem;">
+            <h2 style="font-size:1rem;font-weight:700;color:#1a56db;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e0e4ed;padding-bottom:.4rem;margin-bottom:.75rem;">
+                Education
+            </h2>
+            @foreach (var e in Model.Educations)
+            {
+                <div style="margin-bottom:1rem;">
+                    <div style="font-weight:700;color:#0a1628;">@e.Degree @(!string.IsNullOrEmpty(e.FieldOfStudy) ? $"in {e.FieldOfStudy}" : "")</div>
+                    <div style="color:#1a56db;font-size:0.9rem;">@e.Institution</div>
+                    <div style="font-size:0.85rem;color:#888;">
+                        @e.StartYear – @(e.EndYear.HasValue ? e.EndYear.Value.ToString() : "Present")
+                    </div>
+                    @if (!string.IsNullOrEmpty(e.Description))
+                    { <div style="margin-top:.4rem;color:#444;font-size:0.9rem;">@e.Description</div> }
+                </div>
+            }
+        </div>
+    }
+
+    <!-- WORK EXPERIENCE -->
+    @if (Model.WorkExperiences != null && Model.WorkExperiences.Any())
+    {
+        <div style="margin-bottom:1.5rem;">
+            <h2 style="font-size:1rem;font-weight:700;color:#1a56db;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e0e4ed;padding-bottom:.4rem;margin-bottom:.75rem;">
+                Work Experience
+            </h2>
+            @foreach (var w in Model.WorkExperiences)
+            {
+                <div style="margin-bottom:1.1rem;">
+                    <div style="font-weight:700;color:#0a1628;">@w.JobTitle</div>
+                    <div style="color:#1a56db;font-size:0.9rem;">@w.Company @(!string.IsNullOrEmpty(w.Location) ? $"— {w.Location}" : "")</div>
+                    <div style="font-size:0.85rem;color:#888;">
+                        @w.StartDate?.ToString("MMM yyyy") –
+                        @(w.IsCurrent ? "Present" : w.EndDate?.ToString("MMM yyyy") ?? "Present")
+                    </div>
+                    @if (!string.IsNullOrEmpty(w.Description))
+                    { <div style="margin-top:.4rem;color:#444;font-size:0.9rem;">@w.Description</div> }
+                </div>
+            }
+        </div>
+    }
+
+    <!-- SKILLS -->
+    @if (Model.Skills != null && Model.Skills.Any())
+    {
+        <div style="margin-bottom:1.5rem;">
+            <h2 style="font-size:1rem;font-weight:700;color:#1a56db;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #e0e4ed;padding-bottom:.4rem;margin-bottom:.75rem;">
+                Skills
+            </h2>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+                @foreach (var s in Model.Skills)
+                {
+                    <span style="background:#f0f4ff;color:#1a56db;border:1px solid #bee3f8;border-radius:20px;padding:.3rem .85rem;font-size:0.85rem;font-weight:600;">
+                        @s.Name
+                        @if (!string.IsNullOrEmpty(s.Level))
+                        { <span style="color:#888;font-weight:400;font-size:0.78rem;"> · @s.Level</span> }
+                    </span>
+                }
             </div>
         </div>
     }
 
-    <div class="d-flex gap-2">
-        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
-        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">Delete</a>
-        <a asp-action="GenerateAI" asp-route-id="@Model.Id" class="btn btn-success">✨ Generate AI Resume</a>
-    </div>
+    <!-- AI IMPROVEMENTS -->
+    @if (!string.IsNullOrEmpty(Model.AIImprovements))
+    {
+        <div style="background:#fffbea;border:1px solid #fde68a;border-radius:10px;padding:1rem 1.25rem;margin-top:1.5rem;">
+            <div style="font-weight:700;color:#92400e;margin-bottom:.5rem;">💡 AI Improvement Suggestions</div>
+            <div style="font-size:0.88rem;color:#78350f;">@Model.AIImprovements</div>
+        </div>
+    }
+
+    <!-- AI SKILL GAPS -->
+    @if (!string.IsNullOrEmpty(Model.AISkillGaps))
+    {
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:1rem 1.25rem;margin-top:1rem;">
+            <div style="font-weight:700;color:#991b1b;margin-bottom:.5rem;">⚠ Skill Gaps Detected</div>
+            <div style="font-size:0.88rem;color:#7f1d1d;">@Model.AISkillGaps</div>
+        </div>
+    }
+
 </div>

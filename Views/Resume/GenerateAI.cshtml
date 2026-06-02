@@ -1,37 +1,141 @@
-﻿{
+﻿@{
     ViewData["Title"] = "AI Generated Resume";
 }
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
+<style>
+    @@media print {
+        nav, header, .navbar, footer, .no-print { display: none !important; }
+        body { margin: 0; background: white; }
+        .resume-print-box {
+            box-shadow: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            padding: 1rem 2rem !important;
+            max-width: 100% !important;
+        }
+    }
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2>AI Generated Resume</h2>
-                <a asp-action="Index" class="btn btn-outline-secondary">← Back</a>
-            </div>
+    .resume-print-box h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #0a1628;
+        margin: 0 0 0.25rem;
+    }
+    .resume-print-box .contact-line {
+        color: #555;
+        font-size: 0.88rem;
+        margin-bottom: 1.2rem;
+    }
+    .resume-print-box hr {
+        border: none;
+        border-top: 2px solid #1a56db;
+        margin: 0.5rem 0 1.2rem;
+    }
+    .resume-print-box h2 {
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #1a56db;
+        border-bottom: 1px solid #e0e4ed;
+        padding-bottom: 0.3rem;
+        margin: 1.4rem 0 0.6rem;
+    }
+    .resume-print-box h3 {
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #0a1628;
+        margin: 0.8rem 0 0.1rem;
+    }
+    .resume-print-box ul {
+        padding-left: 1.4rem;
+        margin: 0.3rem 0 0.6rem;
+    }
+    .resume-print-box ul li {
+        margin: 0.2rem 0;
+        color: #333;
+    }
+    .resume-print-box p {
+        margin: 0.4rem 0;
+        color: #333;
+    }
+    .resume-print-box em {
+        color: #666;
+        font-style: normal;
+        font-size: 0.88rem;
+    }
+</style>
 
-            @if (ViewBag.GeneratedResume != null)
-            {
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between">
-                        <h5 class="mb-0">@ViewBag.ResumeName — Professional Resume</h5>
-                        <button onclick="window.print()" class="btn btn-light btn-sm">
-                            🖨️ Print / Save as PDF
-                        </button>
-                    </div>
-                    <div class="card-body">
-                        <pre style="white-space: pre-wrap; font-family: 'Segoe UI', sans-serif; font-size: 14px; line-height: 1.8;">@ViewBag.GeneratedResume</pre>
-                    </div>
-                </div>
-            }
-            else
-            {
-                <div class="alert alert-warning">
-                    Could not generate resume. Please try again.
-                </div>
-            }
+<div class="no-print" style="max-width:860px;margin:1.5rem auto 0;padding:0 1rem;">
+    <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm">← Back</a>
+</div>
 
-        </div>
+<div style="max-width:860px;margin:1rem auto 2rem;padding:0 1rem;">
+
+    <div class="no-print" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:1rem;">
+        <h2 style="margin:0;font-size:1.4rem;font-weight:700;color:#0a1628;">AI Generated Resume</h2>
+        <button id="printBtn" class="btn btn-primary" style="background:#1a56db;border:none;padding:.55rem 1.25rem;border-radius:8px;font-weight:600;">
+            🖨 Print / Save as PDF
+        </button>
+    </div>
+
+    <div class="resume-print-box" style="background:#fff;border:1px solid #e0e4ed;border-radius:14px;padding:2.5rem;font-family:'Segoe UI',sans-serif;font-size:0.92rem;line-height:1.75;color:#1a1a2e;">
+        <div id="resumeContent"></div>
     </div>
 </div>
+
+<script>
+    const raw = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(ViewBag.GeneratedResume ?? ""));
+
+    function markdownToHtml(text) {
+        let lines = text.split('\n');
+        let html = '';
+        let inList = false;
+
+        for (let line of lines) {
+            line = line.trim();
+
+            if (line.startsWith('# ')) {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += `<h1>${inline(line.slice(2))}</h1>`;
+            } else if (line.startsWith('## ')) {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += `<h2>${inline(line.slice(3))}</h2>`;
+            } else if (line.startsWith('### ')) {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += `<h3>${inline(line.slice(4))}</h3>`;
+            } else if (line === '---') {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += '<hr>';
+            } else if (line.startsWith('* ') || line.startsWith('- ')) {
+                if (!inList) { html += '<ul>'; inList = true; }
+                html += `<li>${inline(line.slice(2))}</li>`;
+            } else if (line === '') {
+                if (inList) { html += '</ul>'; inList = false; }
+            } else {
+                if (inList) { html += '</ul>'; inList = false; }
+                // contact line (contains | separators)
+                if (line.includes('|') && !line.startsWith('<')) {
+                    html += `<p class="contact-line">${inline(line)}</p>`;
+                } else {
+                    html += `<p>${inline(line)}</p>`;
+                }
+            }
+        }
+
+        if (inList) html += '</ul>';
+        return html;
+    }
+
+    function inline(text) {
+        return text
+            .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.+?)\*/g, '<em>$1</em>');
+    }
+
+    document.getElementById('resumeContent').innerHTML = markdownToHtml(raw);
+
+    document.getElementById('printBtn').addEventListener('click', function () {
+        setTimeout(() => window.print(), 300);
+    });
+</script>

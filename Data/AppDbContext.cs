@@ -1,5 +1,5 @@
 ﻿using AI_Resume.Models;
-using AI_Resume.Models;
+
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 

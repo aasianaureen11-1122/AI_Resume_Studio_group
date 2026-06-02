@@ -168,8 +168,7 @@
                     <div class="entry-header">
                         <span class="entry-title">@w.JobTitle</span>
                         <span class="entry-date">,
-                            @w.StartDate.ToString("MMM yyyy") – @(w.IsCurrent ? "Present" : w.EndDate.ToString("MMM yyyy"))
-                            
+                            @(w.StartDate.HasValue ? w.StartDate.Value.ToString("MMM yyyy") : "") – @(w.IsCurrent ? "Present" : (w.EndDate.HasValue ? w.EndDate.Value.ToString("MMM yyyy") : "Present"))                            
                         </span>
                     </div>
                     <p class="entry-sub">@w.Company@(string.IsNullOrEmpty(w.Location) ? "" : ", " + w.Location)</p>

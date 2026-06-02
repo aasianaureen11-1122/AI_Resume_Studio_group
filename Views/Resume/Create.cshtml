@@ -3,7 +3,12 @@
 @{
     ViewData["Title"] = "Create Resume";
 }
-
+@if (TempData["DebugErrors"] != null)
+{
+    <div class="alert alert-danger" style="margin:1rem 0">
+        <strong>Validation failed:</strong> @TempData["DebugErrors"]
+    </div>
+}
 <div class="page-header">
     <div class="container">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
